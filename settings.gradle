@@ -1,0 +1,5 @@
+rootProject.name = 'mscript'
+
+include 'platform-bukkit'
+include 'platform-bungeecord'
+include 'platform-velocity'

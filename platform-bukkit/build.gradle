@@ -1,0 +1,9 @@
+description = 'Bukkit platform integration for mscript'
+
+repositories {
+    maven { url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/') }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:26.2-R0.1-SNAPSHOT'
+}

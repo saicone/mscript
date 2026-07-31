@@ -1,0 +1,73 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            pom {
+                afterEvaluate {
+                    name = project.description
+                    description = project.description
+                }
+                url = 'https://github.com/saicone/mscript'
+
+                organization {
+                    name = 'saicone'
+                    url = 'https://github.com/saicone'
+                }
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/license/MIT'
+                        distribution = 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'Rubenicos'
+                        name = 'Rubén Chavarría'
+                        email = 'ruben.chavarria@saicone.com'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/saicone/mscript.git'
+                    developerConnection = 'scm:git:ssh://github.com/saicone/mscript.git'
+                    url = 'https://github.com/saicone/mscript'
+                }
+
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/saicone/mscript/issues'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'Deployment'
+
+            url = version.endsWith("SNAPSHOT") ?
+                    uri("https://central.sonatype.com/repository/maven-snapshots/") :
+                    uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
+
+            credentials {
+                username = project.findProperty("maven.publish.username") ?: ""
+                password = project.findProperty("maven.publish.password") ?: ""
+            }
+        }
+    }
+}
+
+signing {
+    required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("publish") }
+    useGpgCmd()
+    sign publishing.publications.maven
+}

@@ -1,0 +1,5 @@
+description = 'Bungeecord platform integration for mscript'
+
+dependencies {
+    compileOnly 'net.md-5:bungeecord-api:26.1-R0.1-SNAPSHOT'
+}

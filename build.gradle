@@ -1,0 +1,120 @@
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    apply from: "$rootDir/gradle/publish-config.gradle"
+
+    idea {
+        module {
+            downloadJavadoc = true
+            downloadSources = true
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url = uri('https://central.sonatype.com/repository/maven-snapshots') }
+        maven { url = uri('https://libraries.minecraft.net') }
+        maven { url = uri('https://repo.codemc.io/repository/nms/') }
+        maven { url = uri('https://jitpack.io') }
+    }
+
+    dependencies {
+        compileOnly 'org.jetbrains:annotations:26.1.0'
+
+        compileOnly fileTree(dir: 'libs', includes: ['*.jar'])
+    }
+
+    compileJava {
+        options.encoding = 'UTF-8'
+    }
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    javadoc {
+        options {
+            links 'https://docs.oracle.com/en/java/javase/21/docs/api/'
+            links 'https://javadoc.io/doc/org.jetbrains/annotations/latest/'
+        }
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+
+                pom {
+                    afterEvaluate {
+                        description = 'Script interpreter for Minecraft projects'
+                    }
+                }
+            }
+        }
+    }
+}
+
+subprojects {
+    dependencies {
+        api rootProject
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                artifactId = 'mscript-' + project.name
+
+                pom {
+                    afterEvaluate {
+                        description = "Module \"${project.name}\" of mscript"
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    testImplementation(platform('org.junit:junit-bom:5.14.3'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    failOnNoDiscoveredTests = false
+}
+
+def javadocProjects = [
+        ':',
+        ':platform-bukkit',
+        ':platform-bungeecord',
+        ':platform-velocity',
+]
+
+tasks.register('allJavadoc', Javadoc) {
+    group = 'documentation'
+
+    source javadocProjects.collect { project(it).sourceSets.main.allJava }
+    classpath = files(javadocProjects.collect { project(it).sourceSets.main.compileClasspath })
+    javadocTool.set(javaToolchains.javadocToolFor {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    })
+
+    options {
+        def allLinks = javadocProjects.collect { projectPath ->
+            project(projectPath).javadoc.options.links
+        }.flatten().unique()
+        allLinks.each { link -> links link }
+    }
+
+    destinationDir = file(project.layout.buildDirectory.dir('docs/all-javadoc'))
+}

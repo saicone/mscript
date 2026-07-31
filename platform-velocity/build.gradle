@@ -1,0 +1,13 @@
+description = 'Velocity platform integration for mscript'
+
+repositories {
+    maven { url = uri('https://repo.papermc.io/repository/maven-public/') }
+}
+
+dependencies {
+    compileOnly 'com.velocitypowered:velocity-api:4.1.0-SNAPSHOT'
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
