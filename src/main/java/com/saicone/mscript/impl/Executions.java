@@ -1,0 +1,15 @@
+package com.saicone.mscript.impl;
+
+import com.saicone.mscript.Execution;
+import com.saicone.mscript.impl.execution.DelayExecution;
+import com.saicone.mscript.impl.execution.ResultExecution;
+import com.saicone.mscript.io.SectionReader;
+
+public final class Executions {
+
+    public static final SectionReader<? extends Execution> RESULT = ResultExecution.READER;
+    public static final SectionReader<? extends Execution> DELAY = DelayExecution.READER;
+
+    Executions() {
+    }
+}
