@@ -23,6 +23,8 @@ allprojects {
 
     dependencies {
         compileOnlyApi 'net.kyori:adventure-api:4.26.1'
+        compileOnlyApi 'net.kyori:adventure-text-minimessage:4.26.1'
+        compileOnlyApi 'net.kyori:adventure-text-serializer-legacy:4.26.1'
         api 'com.saicone:types:1.4.3'
 
         compileOnly 'org.jetbrains:annotations:26.1.0'
