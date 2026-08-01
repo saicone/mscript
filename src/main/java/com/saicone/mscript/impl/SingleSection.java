@@ -58,4 +58,20 @@ public abstract class SingleSection<T> implements Section {
     public T getValue(@NotNull Context context) {
         return value.get(context);
     }
+
+    public static class Text extends SingleSection<String> {
+
+        protected Text(@Nullable Object object) {
+            super(object);
+        }
+
+        protected Text(@NotNull Value<String> value) {
+            super(value);
+        }
+
+        @Override
+        protected @NotNull String parse(@NotNull Object object) {
+            return object.toString();
+        }
+    }
 }
