@@ -7,6 +7,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @ApiStatus.Internal
@@ -29,6 +30,11 @@ public class DelegateContext implements Context {
     }
 
     @Override
+    public @NotNull Audience audience() {
+        return delegate.audience();
+    }
+
+    @Override
     public @NotNull <T> T get() {
         return delegate.get();
     }
@@ -39,8 +45,8 @@ public class DelegateContext implements Context {
     }
 
     @Override
-    public @NotNull Audience audience() {
-        return delegate.audience();
+    public @NotNull UUID getUniqueId() {
+        return delegate.getUniqueId();
     }
 
     @Override

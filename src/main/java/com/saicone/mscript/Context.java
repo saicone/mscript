@@ -8,15 +8,23 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public interface Context {
+
+    UUID SERVER_ID = new UUID(0, 0);
 
     @NotNull
     Object source();
 
     @Nullable
     Object agent();
+
+    @NotNull
+    default Audience audience() {
+        return (Audience) source();
+    }
 
     @NotNull
     @SuppressWarnings("unchecked")
@@ -35,8 +43,8 @@ public interface Context {
     }
 
     @NotNull
-    default Audience audience() {
-        return (Audience) source();
+    default UUID getUniqueId() {
+        throw new UnsupportedOperationException("Unique ID is not supported in this context");
     }
 
     @NotNull

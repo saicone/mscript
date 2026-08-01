@@ -4,7 +4,7 @@ import com.saicone.mscript.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class AbstractContext implements Context {
+public abstract class AbstractContext implements Context {
 
     protected final Object source;
     protected Object agent;

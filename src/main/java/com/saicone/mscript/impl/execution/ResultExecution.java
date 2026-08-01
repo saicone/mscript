@@ -33,7 +33,7 @@ public class ResultExecution implements Execution {
                 default:
                     throw new IllegalArgumentException("Unknown result: " + id);
             }
-            return new ResultExecution(Value.of(result));
+            return new ResultExecution(Value.literal(result));
         }
 
         @Override
@@ -41,11 +41,11 @@ public class ResultExecution implements Execution {
             if (id.equalsIgnoreCase("return")) {
                 final Value<Result> value;
                 if ("true".equals(context) || "false".equals(context)) {
-                    value = Value.of(Result.value(Boolean.parseBoolean((String) context)));
+                    value = Value.literal(Result.value(Boolean.parseBoolean((String) context)));
                 } else if (context instanceof String str) {
-                    value = Value.of(Result::value, str);
+                    value = Value.using(Result::value, str);
                 } else {
-                    value = Value.of(Result.value(context));
+                    value = Value.literal(Result.value(context));
                 }
 
                 return new ResultExecution(value);
