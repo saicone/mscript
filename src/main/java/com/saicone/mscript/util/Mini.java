@@ -4,6 +4,8 @@ import com.saicone.types.AnyIterable;
 import com.saicone.types.TypeParser;
 import com.saicone.types.parser.ListParser;
 import io.github.miniplaceholders.api.MiniPlaceholders;
+import io.github.miniplaceholders.api.types.RelationalAudience;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -71,6 +73,15 @@ public class Mini implements TypeParser<Component> {
         return miniMessage;
     }
 
+    @NotNull
+    public Audience relational(@NotNull Audience main, @NotNull Audience secondary) {
+        if (useMiniPlaceholders.get()) {
+            return RelationalAudience.from(main, secondary);
+        } else {
+            return main;
+        }
+    }
+
     @Override
     public @NotNull Component parse(@NotNull Object object) {
         return parse(null, object);
@@ -110,7 +121,11 @@ public class Mini implements TypeParser<Component> {
     public Component deserialize(@Nullable Pointered target, @NotNull String str) {
         if (useMiniPlaceholders.get()) {
             if (target != null) {
-                return miniMessage.deserialize(str, target, MiniPlaceholders.audienceGlobalPlaceholders());
+                if (target instanceof RelationalAudience<?>) {
+                    return miniMessage.deserialize(str, target, MiniPlaceholders.relationalGlobalPlaceholders());
+                } else {
+                    return miniMessage.deserialize(str, target, MiniPlaceholders.audienceGlobalPlaceholders());
+                }
             } else {
                 return miniMessage.deserialize(str, MiniPlaceholders.globalPlaceholders());
             }

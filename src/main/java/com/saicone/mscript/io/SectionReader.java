@@ -81,4 +81,18 @@ public class SectionReader<T extends Section> {
     protected T read(@NotNull String id, @NotNull List<?> context) {
         throw new IllegalStateException("Unsupported type: List");
     }
+
+    @Override
+    public final boolean equals(Object object) {
+        if (!(object instanceof SectionReader<?> that)) return false;
+
+        return regex.equals(that.regex) && defaultKey.equals(that.defaultKey);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = regex.hashCode();
+        result = 31 * result + defaultKey.hashCode();
+        return result;
+    }
 }

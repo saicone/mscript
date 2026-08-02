@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +41,15 @@ public interface Context {
     default <T> T get(@NotNull Class<T> type) {
         final Object object = get();
         return type.cast(object);
+    }
+
+    @NotNull
+    default <T> Optional<T> getIf(@NotNull Class<T> type) {
+        final Object object = get();
+        if (type.isInstance(object)) {
+            return Optional.of(type.cast(object));
+        }
+        return Optional.empty();
     }
 
     @NotNull
