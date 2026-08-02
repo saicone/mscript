@@ -54,15 +54,15 @@ public class ScriptReader {
     @NotNull
     public Value<?> readValue(@NotNull String s) {
         if (s.equalsIgnoreCase("true")) {
-            return context -> true;
+            return Value.literal(true);
         }
         if (s.equalsIgnoreCase("false")) {
-            return context -> false;
+            return Value.literal(false);
         }
         if (isParseable(s)) {
             return context -> context.parse(s);
         }
-        return context -> s;
+        return Value.literal(s);
     }
 
     @Nullable

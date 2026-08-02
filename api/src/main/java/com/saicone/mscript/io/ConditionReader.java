@@ -185,7 +185,11 @@ public abstract class ConditionReader extends StringReader {
             this.depth--;
         }
 
-        return readValue(builder.toString());
+        if (end == '\'') {
+            return Value.literal(builder.toString());
+        } else {
+            return readValue(builder.toString());
+        }
     }
 
     @Nullable
