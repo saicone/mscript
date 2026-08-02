@@ -12,3 +12,9 @@ dependencies {
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
+
+javadoc {
+    options {
+        links 'https://jd.papermc.io/velocity/4.1.0/'
+    }
+}

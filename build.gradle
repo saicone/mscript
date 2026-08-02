@@ -48,7 +48,13 @@ subprojects {
     javadoc {
         options {
             links 'https://docs.oracle.com/en/java/javase/21/docs/api/'
-            links 'https://javadoc.io/doc/org.jetbrains/annotations/latest/'
+            // adventure
+            links 'https://jd.advntr.dev/api/4.26.1/'
+            links 'https://jd.advntr.dev/text-minimessage/4.26.1/'
+            // annotations
+            links 'https://javadoc.io/doc/org.jetbrains/annotations/26.1.0/'
+            // types
+            links 'https://javadoc.saicone.com/types/'
         }
     }
 

@@ -9,3 +9,9 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:26.2-R0.1-SNAPSHOT'
     compileOnly 'net.kyori:adventure-platform-bukkit:4.4.1'
 }
+
+javadoc {
+    options {
+        links 'https://hub.spigotmc.org/javadocs/spigot/'
+    }
+}

@@ -4,3 +4,9 @@ dependencies {
     api project(':api')
     compileOnly 'net.md-5:bungeecord-api:26.1-R0.1-SNAPSHOT'
 }
+
+javadoc {
+    options {
+        links 'https://javadoc.io/doc/net.md-5/bungeecord-api/1.21-R0.3/'
+    }
+}
