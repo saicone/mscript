@@ -1,10 +1,11 @@
-description = 'Velocity platform integration for mscript'
+description = 'MScript Platform Velocity'
 
 repositories {
     maven { url = uri('https://repo.papermc.io/repository/maven-public/') }
 }
 
 dependencies {
+    api project(':api')
     compileOnly 'com.velocitypowered:velocity-api:4.1.0-SNAPSHOT'
 }
 

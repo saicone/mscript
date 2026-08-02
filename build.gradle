@@ -1,10 +1,6 @@
 allprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
-    apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-
-    apply from: "$rootDir/gradle/publish-config.gradle"
 
     idea {
         module {
@@ -20,6 +16,13 @@ allprojects {
         maven { url = uri('https://repo.codemc.io/repository/nms/') }
         maven { url = uri('https://jitpack.io') }
     }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    apply from: "$rootDir/gradle/publish-config.gradle"
 
     dependencies {
         compileOnlyApi 'net.kyori:adventure-api:4.26.1'
@@ -53,25 +56,6 @@ allprojects {
         publications {
             maven(MavenPublication) {
                 from components.java
-
-                pom {
-                    afterEvaluate {
-                        description = 'Script interpreter for Minecraft projects'
-                    }
-                }
-            }
-        }
-    }
-}
-
-subprojects {
-    dependencies {
-        api rootProject
-    }
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
                 artifactId = 'mscript-' + project.name
 
                 pom {
@@ -84,42 +68,8 @@ subprojects {
     }
 }
 
-configurations {
-    compileOnlyWith
-}
-
-dependencies {
-    compileOnly 'net.luckperms:api:5.4'
-    compileOnlyWith 'io.github.miniplaceholders:miniplaceholders-api:3.2.0'
-
-    testImplementation(platform('org.junit:junit-bom:5.14.3'))
-    testImplementation('org.junit.jupiter:junit-jupiter')
-    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
-}
-
-javadoc {
-    classpath += configurations.compileOnlyWith
-}
-
-tasks.withType(JavaCompile).configureEach {
-    classpath += configurations.compileOnlyWith
-    options.release = 21
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-    failOnNoDiscoveredTests = false
-}
-
 def javadocProjects = [
-        ':',
+        ':api',
         ':platform-bukkit',
         ':platform-bungeecord',
         ':platform-velocity',
@@ -129,8 +79,8 @@ tasks.register('allJavadoc', Javadoc) {
     group = 'documentation'
 
     source javadocProjects.collect { project(it).sourceSets.main.allJava }
-    classpath = files(javadocProjects.collect { project(it).sourceSets.main.compileClasspath })
-    classpath += configurations.compileOnlyWith
+    classpath = files(javadocProjects.collect { project(it).sourceSets.main.compileClasspath }) +
+                files(javadocProjects.collect { project(it).configurations.findByName('compileOnlyWith') }.findAll { it != null })
     javadocTool.set(javaToolchains.javadocToolFor {
         languageVersion.set(JavaLanguageVersion.of(25))
     })

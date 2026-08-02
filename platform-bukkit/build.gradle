@@ -1,10 +1,11 @@
-description = 'Bukkit platform integration for mscript'
+description = 'MScript Platform Bukkit'
 
 repositories {
     maven { url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/') }
 }
 
 dependencies {
+    api project(':api')
     compileOnly 'org.spigotmc:spigot-api:26.2-R0.1-SNAPSHOT'
     compileOnly 'net.kyori:adventure-platform-bukkit:4.4.1'
 }

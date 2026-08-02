@@ -1,0 +1,47 @@
+description = 'MScript API'
+
+configurations {
+    compileOnlyWith
+}
+
+dependencies {
+    compileOnly 'net.luckperms:api:5.4'
+    compileOnlyWith 'io.github.miniplaceholders:miniplaceholders-api:3.2.0'
+
+    testImplementation(platform('org.junit:junit-bom:5.14.3'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+javadoc {
+    classpath += configurations.compileOnlyWith
+}
+
+tasks.withType(JavaCompile).configureEach {
+    classpath += configurations.compileOnlyWith
+    options.release = 21
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    failOnNoDiscoveredTests = false
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            pom {
+                afterEvaluate {
+                    description = "Script interpreter for Minecraft projects"
+                }
+            }
+        }
+    }
+}
