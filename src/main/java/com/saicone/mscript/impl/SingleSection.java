@@ -4,12 +4,15 @@ import com.saicone.mscript.Context;
 import com.saicone.mscript.Section;
 import com.saicone.mscript.Value;
 import com.saicone.mscript.io.SectionReader;
+import com.saicone.types.TypeParser;
+import com.saicone.types.Types;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.List;
 import java.util.function.Function;
 
 @ApiStatus.Internal
@@ -72,6 +75,24 @@ public abstract class SingleSection<T> implements Section {
         @Override
         protected @NotNull String parse(@NotNull Object object) {
             return object.toString();
+        }
+    }
+
+    public static class TextList extends SingleSection<List<String>> {
+
+        private static final TypeParser<List<String>> PARSER = Types.STRING.list();
+
+        protected TextList(@Nullable Object object) {
+            super(object);
+        }
+
+        protected TextList(@NotNull Value<List<String>> value) {
+            super(value);
+        }
+
+        @Override
+        protected @NotNull List<String> parse(@NotNull Object object) {
+            return PARSER.parse(object);
         }
     }
 }

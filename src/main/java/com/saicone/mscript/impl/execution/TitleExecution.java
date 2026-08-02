@@ -4,10 +4,9 @@ import com.saicone.mscript.Context;
 import com.saicone.mscript.Execution;
 import com.saicone.mscript.Result;
 import com.saicone.mscript.io.SectionReader;
-import com.saicone.mscript.util.MTypes;
+import com.saicone.mscript.util.Mini;
 import com.saicone.mscript.util.Strings;
 import com.saicone.types.Types;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,8 +58,8 @@ public class TitleExecution implements Execution {
         final String title = this.title == null ? null : context.parse(this.title);
         final String subtitle = this.subtitle == null ? null : context.parse(this.subtitle);
         context.audience().showTitle(Title.title(
-                MTypes.COMPONENT.parse(title, Component.empty()),
-                MTypes.COMPONENT.parse(subtitle, Component.empty()),
+                Mini.get().parseOrEmpty(context.audience(), title),
+                Mini.get().parseOrEmpty(context.audience(), subtitle),
                 fadeIn,
                 stay,
                 fadeOut

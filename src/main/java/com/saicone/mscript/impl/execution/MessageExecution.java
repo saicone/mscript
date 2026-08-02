@@ -5,14 +5,11 @@ import com.saicone.mscript.Execution;
 import com.saicone.mscript.Result;
 import com.saicone.mscript.impl.SingleSection;
 import com.saicone.mscript.io.SectionReader;
-import com.saicone.mscript.util.MTypes;
-import net.kyori.adventure.text.Component;
+import com.saicone.mscript.util.Mini;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public class MessageExecution extends SingleSection<List<Component>> implements Execution {
+public class MessageExecution extends SingleSection.TextList implements Execution {
 
     public static final SectionReader<MessageExecution> READER = reader("(mini-?)?messages?|msg|tell", MessageExecution::new);
 
@@ -21,14 +18,9 @@ public class MessageExecution extends SingleSection<List<Component>> implements 
     }
 
     @Override
-    protected @NotNull List<Component> parse(@NotNull Object object) {
-        return MTypes.COMPONENT_LIST.parse(object);
-    }
-
-    @Override
     public @NotNull Result run(@NotNull Context context) {
-        for (Component line : getValue(context)) {
-            context.audience().sendMessage(line);
+        for (String line : getValue(context)) {
+            context.audience().sendMessage(Mini.get().parse(context.audience(), line));
         }
         return Result.DONE;
     }
