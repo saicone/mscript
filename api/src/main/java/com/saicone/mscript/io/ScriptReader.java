@@ -62,13 +62,6 @@ public class ScriptReader {
         if (isParseable(s)) {
             return context -> context.parse(s);
         }
-        if (s.endsWith("%")) {
-            final Double percent = Types.DOUBLE.parse(s.substring(0, s.length() - 1));
-            if (percent != null) {
-                final double number = percent / 100;
-                return context -> number;
-            }
-        }
         return context -> s;
     }
 
