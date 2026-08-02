@@ -98,7 +98,11 @@ dependencies {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+javadoc {
+    classpath += configurations.compileOnlyWith
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -126,6 +130,7 @@ tasks.register('allJavadoc', Javadoc) {
 
     source javadocProjects.collect { project(it).sourceSets.main.allJava }
     classpath = files(javadocProjects.collect { project(it).sourceSets.main.compileClasspath })
+    classpath += configurations.compileOnlyWith
     javadocTool.set(javaToolchains.javadocToolFor {
         languageVersion.set(JavaLanguageVersion.of(25))
     })
