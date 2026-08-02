@@ -4,8 +4,11 @@ import com.saicone.mscript.ComposedContext;
 import com.saicone.mscript.Context;
 import com.saicone.mscript.context.AbstractComposedContext;
 import com.saicone.mscript.platform.bukkit.util.Audiences;
+import com.saicone.mscript.platform.bukkit.util.PAPI;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -60,7 +63,12 @@ public class BukkitContext extends AbstractComposedContext implements Context {
 
     @Override
     public @NotNull String parse(@NotNull String str) {
-        return super.parse(str);
+        String result = str;
+        if (PAPI.get().isPresent() && str.contains("%")) {
+            final CommandSender sender = get();
+            result = PlaceholderAPI.setPlaceholders(sender instanceof OfflinePlayer ? (OfflinePlayer) sender : null, str);
+        }
+        return result;
     }
 
     // TODO: Add multi-threaded server support
