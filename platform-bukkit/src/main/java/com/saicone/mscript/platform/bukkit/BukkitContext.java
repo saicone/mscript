@@ -1,7 +1,8 @@
 package com.saicone.mscript.platform.bukkit;
 
+import com.saicone.mscript.ComposedContext;
 import com.saicone.mscript.Context;
-import com.saicone.mscript.context.AbstractContext;
+import com.saicone.mscript.context.AbstractComposedContext;
 import com.saicone.mscript.platform.bukkit.util.Audiences;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
@@ -13,19 +14,33 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
-public class BukkitContext extends AbstractContext {
+public class BukkitContext extends AbstractComposedContext implements Context {
 
-    private final Plugin plugin;
+    protected final Plugin plugin;
+    protected final CommandSender source;
+    protected CommandSender agent;
 
     public BukkitContext(@NotNull Plugin plugin, @NotNull CommandSender source, @Nullable CommandSender agent) {
-        super(source, agent);
         this.plugin = plugin;
+        this.source = source;
+        this.agent = agent;
     }
 
     @NotNull
     public Plugin plugin() {
         return plugin;
+    }
+
+    @Override
+    public @NotNull CommandSender source() {
+        return source;
+    }
+
+    @Override
+    public @Nullable CommandSender agent() {
+        return agent;
     }
 
     @Override
@@ -41,6 +56,11 @@ public class BukkitContext extends AbstractContext {
         } else {
             return Context.SERVER_ID;
         }
+    }
+
+    @Override
+    public @NotNull String parse(@NotNull String str) {
+        return super.parse(str);
     }
 
     // TODO: Add multi-threaded server support
@@ -71,5 +91,15 @@ public class BukkitContext extends AbstractContext {
         }
 
         Bukkit.getScheduler().runTaskLater(this.plugin, command, ticks);
+    }
+
+    @Override
+    public @NotNull ComposedContext parser(@NotNull UnaryOperator<String> operator) {
+        throw new IllegalStateException("The current context does not support parser override, use #composed() method instead");
+    }
+
+    @Override
+    public @NotNull ComposedContext replace(@NotNull String str, @NotNull Object value) {
+        throw new IllegalStateException("The current context does not support literal replacement, use #composed() method instead");
     }
 }

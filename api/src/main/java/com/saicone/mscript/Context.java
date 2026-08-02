@@ -1,6 +1,6 @@
 package com.saicone.mscript;
 
-import com.saicone.mscript.context.ComposedContext;
+import com.saicone.mscript.context.DelegateComposedContext;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -104,6 +104,6 @@ public interface Context {
 
     @NotNull
     default ComposedContext composed() {
-        return new ComposedContext(this);
+        return new DelegateComposedContext(this);
     }
 }

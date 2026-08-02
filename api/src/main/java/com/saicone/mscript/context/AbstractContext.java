@@ -4,23 +4,23 @@ import com.saicone.mscript.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractContext implements Context {
+public abstract class AbstractContext<T> implements Context {
 
-    protected final Object source;
-    protected Object agent;
+    protected final T source;
+    protected T agent;
 
-    public AbstractContext(@NotNull Object source, @Nullable Object agent) {
+    public AbstractContext(@NotNull T source, @Nullable T agent) {
         this.source = source;
         this.agent = agent;
     }
 
     @Override
-    public @NotNull Object source() {
+    public @NotNull T source() {
         return source;
     }
 
     @Override
-    public @Nullable Object agent() {
+    public @Nullable T agent() {
         return agent;
     }
 }
