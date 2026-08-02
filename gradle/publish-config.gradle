@@ -66,8 +66,9 @@ publishing {
     }
 }
 
-signing {
-    required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("publish") }
-    useGpgCmd()
-    sign publishing.publications.maven
+if (!version.endsWith("SNAPSHOT")) {
+    signing {
+        useGpgCmd()
+        sign publishing.publications.maven
+    }
 }
