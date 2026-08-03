@@ -10,12 +10,18 @@ import java.util.function.Function;
 public interface Value<T> extends Section {
 
     Value<?> NULL = context -> null;
+    Value<?> TRUE = context -> true;
+    Value<?> FALSE = context -> false;
 
     @NotNull
     @SuppressWarnings("unchecked")
     static <T> Value<T> literal(@Nullable T value) {
         if (value == null) {
             return (Value<T>) NULL;
+        } else if (Boolean.TRUE.equals(value)) {
+            return (Value<T>) TRUE;
+        } else if (Boolean.FALSE.equals(value)) {
+            return (Value<T>) FALSE;
         }
         return context -> value;
     }

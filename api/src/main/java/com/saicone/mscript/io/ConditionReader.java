@@ -1,8 +1,10 @@
 package com.saicone.mscript.io;
 
 import com.saicone.mscript.Condition;
+import com.saicone.mscript.Context;
 import com.saicone.mscript.Operator;
 import com.saicone.mscript.Value;
+import com.saicone.mscript.util.Values;
 import com.saicone.types.Types;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,10 +54,13 @@ public abstract class ConditionReader extends StringReader {
         }
     }
 
+    private final String string;
+
     private int depth = 0;
 
     public ConditionReader(@NotNull String str) {
         super(str);
+        this.string = str;
     }
 
     @Nullable
@@ -67,12 +72,20 @@ public abstract class ConditionReader extends StringReader {
         if (this.depth != 0) {
             throw new IOException("Unmatched parentheses in condition");
         }
-        return context -> {
-            final Object result = operation.get(context);
-            if (result == null) {
-                return null;
+        return new Condition() {
+            @Override
+            public @Nullable Boolean test(@NotNull Context context) {
+                final Object result = operation.get(context);
+                if (Values.isUnknown(result)) {
+                    return null;
+                }
+                return Values.isTrue(result);
             }
-            return Boolean.TRUE.equals(Types.BOOLEAN.parse(result));
+
+            @Override
+            public String toString() {
+                return string;
+            }
         };
     }
 
@@ -145,7 +158,7 @@ public abstract class ConditionReader extends StringReader {
                     return null;
                 }
                 // With '!' operator, the result is considered a boolean
-                final Boolean bool = Types.BOOLEAN.parse(value);
+                final Boolean bool = Types.BOOLEAN.parseOrDefault(value, null);
                 if (bool == null) {
                     return null;
                 }

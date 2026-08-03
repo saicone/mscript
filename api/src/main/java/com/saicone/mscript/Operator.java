@@ -1,183 +1,281 @@
 package com.saicone.mscript;
 
+import com.saicone.mscript.util.Values;
 import com.saicone.types.Types;
+import com.saicone.types.parser.NumberParser;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 
 public interface Operator {
 
     Object eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b);
 
     enum Arithmetic implements Operator {
-        ADD {
+        ADD("+") {
             @Override
-            public Object eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
-                final Object aObject = a.get(context);
-                final Object bObject = b.get(context);
-                if (aObject != null && bObject != null) {
-                    if (aObject instanceof String && bObject instanceof String) {
-                        return aObject.toString() + bObject.toString();
-                    }
-                    return eval0(aObject, bObject);
+            protected @NotNull Object eval0(@NotNull Object aObject, @NotNull Object bObject) {
+                if (aObject instanceof String && bObject instanceof String) {
+                    return aObject.toString() + bObject.toString();
                 }
-                throw new UnsupportedOperationException("Cannot eval non-numeric values: " + aObject + " and " + bObject);
+                return super.eval0(aObject, bObject);
             }
 
             @Override
-            public @NotNull Number eval(double a, double b) {
-                return a + b;
+            public @NotNull BigDecimal eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.add(b);
             }
         },
-        SUBTRACT {
+        SUBTRACT("-") {
             @Override
-            public @NotNull Number eval(double a, double b) {
-                return a - b;
+            public @NotNull BigDecimal eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.subtract(b);
             }
         },
-        MULTIPLY {
+        MULTIPLY("*") {
             @Override
-            public @NotNull Number eval(double a, double b) {
-                return a * b;
+            public @NotNull BigDecimal eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.multiply(b);
             }
         },
-        DIVIDE {
+        DIVIDE("/") {
             @Override
-            public @NotNull Number eval(double a, double b) {
-                return a / b;
+            public @NotNull BigDecimal eval(@NotNull BigDecimal a, @NotNull BigDecimal b, @NotNull RoundingMode mode) {
+                if (b.compareTo(BigDecimal.ZERO) == 0) {
+                    throw new ArithmeticException("Division by zero: " + a + " / 0");
+                }
+                return a.divide(b, mode);
             }
         },
-        REMAIN {;
+        REMAIN("%") {
             @Override
-            public @NotNull Number eval(double a, double b) {
-                return a % b;
+            public @NotNull BigDecimal eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.remainder(b);
             }
         };
+
+        private final String string;
+
+        Arithmetic(@NotNull String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
 
         @Override
         public Object eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
             final Object aObject = a.get(context);
             final Object bObject = b.get(context);
-            if (aObject != null && bObject != null) {
-                return eval0(aObject, bObject);
+            if (Values.areUnknown(aObject, bObject)) {
+                return null;
             }
-            throw new UnsupportedOperationException("Cannot eval non-numeric values: " + aObject + " and " + bObject);
-        }
 
-        protected Object eval0(@NotNull Object aObject, @NotNull Object bObject) {
-            final Double aNumber = Types.DOUBLE.parse(aObject);
-            final Double bNumber = Types.DOUBLE.parse(bObject);
-            if (aNumber != null && bNumber != null) {
-                final Number result = eval(aNumber, bNumber);
-                if (aObject instanceof Number) {
-                    return Types.of(aObject.getClass()).parse(result);
-                } else if (bObject instanceof Number) {
-                    return Types.of(bObject.getClass()).parse(result);
-                } else {
-                    return result;
-                }
-            }
-            throw new UnsupportedOperationException("Cannot eval non-numeric values: " + aObject + " and " + bObject);
+            return eval0(aObject, bObject);
         }
 
         @NotNull
-        public Number eval(double a, double b) {
-            throw new UnsupportedOperationException("Arithmetic operator " + name() + " does not support direct double evaluation");
+        protected Object eval0(@NotNull Object aObject, @NotNull Object bObject) {
+            final BigDecimal aNumber = Types.BIG_DECIMAL.parseOrDefault(aObject, null);
+            final BigDecimal bNumber = Types.BIG_DECIMAL.parseOrDefault(bObject, null);
+            if (aNumber == null || bNumber == null) {
+                throw new UnsupportedOperationException("Cannot eval non-numeric value on operation: '" + aObject + " " + this + " " + bObject + "'");
+            }
+
+            final BigDecimal result = eval(aNumber, bNumber).stripTrailingZeros();
+            // Try to convert the result back to original type if applicable
+            // It is a bit expensive to do, but ensure consistency with non-overflowed and precise operations
+            if (result.scale() > 0) {
+                return decimalResult(aObject, bObject, result);
+            } else {
+                return integerResult(aObject, bObject, result);
+            }
+        }
+
+        @NotNull
+        public BigDecimal eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+            return eval(a, b, RoundingMode.DOWN);
+        }
+
+        @NotNull
+        public BigDecimal eval(@NotNull BigDecimal a, @NotNull BigDecimal b, @NotNull RoundingMode mode) {
+            return eval(a, b);
+        }
+
+        @NotNull
+        private Object decimalResult(@NotNull Object aObject, @NotNull Object bObject, @NotNull BigDecimal result) {
+            if (aObject instanceof BigDecimal || bObject instanceof BigDecimal) {
+                return result;
+            } else if (aObject instanceof Double || bObject instanceof Double) {
+                if (NumberParser.DOUBLE.isInRange(result)) {
+                    return result.doubleValue();
+                }
+            } else if (aObject instanceof Float || bObject instanceof Float) {
+                if (NumberParser.FLOAT.isInRange(result)) {
+                    return result.floatValue();
+                }
+            }
+            return result;
+        }
+
+        @NotNull
+        private Object integerResult(@NotNull Object aObject, @NotNull Object bObject, @NotNull BigDecimal result) {
+            if (aObject instanceof BigInteger || bObject instanceof BigInteger) {
+                return result.toBigInteger();
+            } else if (aObject instanceof Long || bObject instanceof Long) {
+                if (NumberParser.LONG.isInRange(result)) {
+                    return result.longValue();
+                }
+            } else if (aObject instanceof Integer || bObject instanceof Integer) {
+                if (NumberParser.INTEGER.isInRange(result)) {
+                    return result.intValue();
+                }
+            } else if (aObject instanceof Short || bObject instanceof Short) {
+                if (NumberParser.SHORT.isInRange(result)) {
+                    return result.shortValue();
+                }
+            } else if (aObject instanceof Byte || bObject instanceof Byte) {
+                if (NumberParser.BYTE.isInRange(result)) {
+                    return result.byteValue();
+                }
+            }
+            return result;
         }
     }
 
     enum Relational implements Operator {
-        EQUALS {
+        EQUALS("==") {
             @Override
             public Boolean eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
                 final Object aObject = a.get(context);
                 final Object bObject = b.get(context);
-                return Objects.equals(aObject, bObject);
+                return Values.equals(aObject, bObject);
+            }
+
+            @Override
+            public boolean eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.compareTo(b) == 0;
             }
         },
-        NOT_EQUALS {
+        NOT_EQUALS("!=") {
             @Override
             public Boolean eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
                 final Object aObject = a.get(context);
                 final Object bObject = b.get(context);
-                return !Objects.equals(aObject, bObject);
+                return Values.notEquals(aObject, bObject);
+            }
+
+            @Override
+            public boolean eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.compareTo(b) != 0;
             }
         },
-        GREATER_THAN {
+        GREATER_THAN(">") {
             @Override
-            public @NotNull Boolean eval(double a, double b) {
-                return a > b;
+            public boolean eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.compareTo(b) > 0;
             }
         },
-        GREATER_OR_EQUALS {
+        GREATER_OR_EQUALS(">=") {
             @Override
-            public @NotNull Boolean eval(double a, double b) {
-                return a >= b;
+            public boolean eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.compareTo(b) >= 0;
             }
         },
-        LESS_THAN {
+        LESS_THAN("<") {
             @Override
-            public @NotNull Boolean eval(double a, double b) {
-                return a < b;
+            public boolean eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.compareTo(b) < 0;
             }
         },
-        LESS_OR_EQUALS {
+        LESS_OR_EQUALS("<=") {
             @Override
-            public @NotNull Boolean eval(double a, double b) {
-                return a <= b;
+            public boolean eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+                return a.compareTo(b) <= 0;
             }
         };
+
+        private final String string;
+
+        Relational(@NotNull String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
 
         @Override
         public Boolean eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
             final Object aObject = a.get(context);
             final Object bObject = b.get(context);
-            if (aObject != null && bObject != null) {
-                final Double aNumber = Types.DOUBLE.parse(aObject);
-                final Double bNumber = Types.DOUBLE.parse(bObject);
-                if (aNumber != null && bNumber != null) {
-                    return eval(aNumber, bNumber);
-                }
+            if (Values.areUnknown(aObject, bObject)) {
+                return null;
             }
-            throw new UnsupportedOperationException("Cannot eval non-numeric values: " + aObject + " and " + bObject);
+
+            final BigDecimal aNumber = Types.BIG_DECIMAL.parseOrDefault(aObject, null);
+            final BigDecimal bNumber = Types.BIG_DECIMAL.parseOrDefault(bObject, null);
+            if (aNumber != null && bNumber != null) {
+                return eval(aNumber, bNumber);
+            }
+
+            throw new UnsupportedOperationException("Cannot eval non-numeric value on operation: '" + aObject + " " + this + " " + bObject + "'");
         }
 
-        @NotNull
-        public Boolean eval(double a, double b) {
-            throw new UnsupportedOperationException("Relational operator " + name() + " does not support direct double evaluation");
+        public boolean eval(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+            throw new IllegalStateException();
         }
     }
 
+    /**
+     * Logical operator that handle the term of "tristate"<br>
+     * If a value is unknown (null or undefined) it will be ignored
+     */
     enum Logical implements Operator {
-        AND {
+        AND("&&") {
             @Override
             public Boolean eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
-                Object aVal = a.get(context);
-                if (aVal instanceof Boolean && !(Boolean) aVal) {
+                Object aObject = a.get(context);
+                if (Values.isValid(aObject) && Values.isFalse(aObject)) {
                     return false;
                 }
-                Object bVal = b.get(context);
-                if (bVal instanceof Boolean && !(Boolean) bVal) {
+                Object bObject = b.get(context);
+                if (Values.isValid(bObject) && Values.isFalse(bObject)) {
                     return false;
                 }
-                return true;
+                return Values.isUnknown(aObject) && Values.isUnknown(bObject) ? null : true;
             }
         },
-        OR {
+        OR("||") {
             @Override
             public Boolean eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
-                Object aVal = a.get(context);
-                if (aVal instanceof Boolean && (Boolean) aVal) {
+                Object aObject = a.get(context);
+                if (Values.isValid(aObject) && Values.isTrue(aObject)) {
                     return true;
                 }
-                Object bVal = b.get(context);
-                if (bVal instanceof Boolean && (Boolean) bVal) {
+                Object bObject = b.get(context);
+                if (Values.isValid(bObject) && Values.isTrue(bObject)) {
                     return true;
                 }
-                return false;
+                return Values.isUnknown(aObject) && Values.isUnknown(bObject) ? null : false;
             }
-        },
-        NOT;
+        };
+
+        private final String string;
+
+        Logical(@NotNull String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
 
         @Override
         public Boolean eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
@@ -186,42 +284,75 @@ public interface Operator {
     }
 
     enum Bitwise implements Operator {
-        AND {
+        AND("&") {
             @Override
-            public @NotNull Object eval(long a, long b) {
+            public long eval(long a, long b) {
                 return a & b;
             }
         },
-        OR {
+        OR("|") {
             @Override
-            public @NotNull Object eval(long a, long b) {
+            public long eval(long a, long b) {
                 return a | b;
             }
         },
-        XOR {
+        XOR("^") {
             @Override
-            public @NotNull Object eval(long a, long b) {
+            public long eval(long a, long b) {
                 return a ^ b;
             }
         };
 
+        private final String string;
+
+        Bitwise(@NotNull String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+
         @Override
         public Object eval(@NotNull Context context, @NotNull Value<?> a, @NotNull Value<?> b) {
-            final Object aObject = a.get(context);
-            final Object bObject = b.get(context);
-            if (aObject != null && bObject != null) {
-                final Long aLong = Types.LONG.parse(aObject);
-                final Long bLong = Types.LONG.parse(bObject);
-                if (aLong != null && bLong != null) {
-                    return eval(aLong, bLong);
-                }
+            Object aObject = a.get(context);
+            Object bObject = b.get(context);
+            if (Values.areUnknown(aObject, bObject)) {
+                return null;
             }
-            throw new UnsupportedOperationException("Cannot eval non-integer values: " + aObject + " and " + bObject);
+
+            // Convert any boolean String representation
+            aObject = booleanOrObject(aObject);
+            bObject = booleanOrObject(bObject);
+
+            final Long aLong = Types.LONG.parseOrDefault(aObject, null);
+            final Long bLong = Types.LONG.parseOrDefault(bObject, null);
+            if (aLong != null && bLong != null) {
+                final long result = eval(aLong, bLong);
+                // Try to convert the result back to original type if applicable
+                if (aObject instanceof Boolean && bObject instanceof Boolean) {
+                    return result != 0;
+                }
+                return result;
+            }
+
+            throw new UnsupportedOperationException("Cannot eval non-integer value on operation: '" + aObject + " " + this + " " + bObject + "'");
+        }
+
+        public long eval(long a, long b) {
+            throw new IllegalStateException();
         }
 
         @NotNull
-        public Object eval(long a, long b) {
-            throw new UnsupportedOperationException("Bitwise operator " + name() + " does not support direct long evaluation");
+        private Object booleanOrObject(@NotNull Object object) {
+            if (object instanceof String) {
+                final Boolean bool = Types.BOOLEAN.parseOrDefault(object, null);
+                if (bool != null) {
+                    return bool;
+                }
+            }
+            return object;
         }
     }
 }

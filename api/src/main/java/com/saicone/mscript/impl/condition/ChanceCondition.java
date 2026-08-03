@@ -30,7 +30,7 @@ public class ChanceCondition extends SingleSection<Double> implements Condition 
             if (str.endsWith("%")) {
                 str = str.substring(0, str.length() - 1);
             }
-            return Types.DOUBLE.parse(str) / 100.0;
+            return Types.DOUBLE.parseOrDefault(str, 0D) / 100.0;
         } else {
             throw new IllegalArgumentException("Unsupported type: " + object.getClass().getName());
         }

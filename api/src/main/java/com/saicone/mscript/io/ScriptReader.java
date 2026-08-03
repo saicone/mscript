@@ -74,7 +74,7 @@ public class ScriptReader {
         } else if (object instanceof String) {
             return readCondition((String) object);
         } else if (object != null) {
-            final Boolean bool = Types.BOOLEAN.parse(object);
+            final Boolean bool = Types.BOOLEAN.parseOrDefault(object, null);
             if (bool != null) {
                 return context -> bool;
             }

@@ -25,7 +25,7 @@ public class DelayExecution extends SingleSection<Long> implements Execution {
         if (object instanceof Number number) {
             return number.longValue();
         } else if (object instanceof String str) {
-            final Duration duration = Types.DURATION.parse(str);
+            final Duration duration = Types.DURATION.parseOrDefault(str, null);
             if (duration == null) {
                 throw new IllegalArgumentException("Invalid duration: " + str);
             }
