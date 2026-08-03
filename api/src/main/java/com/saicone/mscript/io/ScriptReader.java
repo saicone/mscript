@@ -3,7 +3,7 @@ package com.saicone.mscript.io;
 import com.saicone.mscript.Condition;
 import com.saicone.mscript.Execution;
 import com.saicone.mscript.Value;
-import com.saicone.mscript.impl.ConditionExecution;
+import com.saicone.mscript.impl.ComposedExecution;
 import com.saicone.mscript.impl.Conditions;
 import com.saicone.mscript.impl.Executions;
 import com.saicone.types.Types;
@@ -191,7 +191,7 @@ public class ScriptReader {
             return executions.get(0);
         }
 
-        return new ConditionExecution(null, executions, List.of());
+        return new ComposedExecution(null, executions, List.of());
     }
 
     @NotNull
@@ -253,7 +253,7 @@ public class ScriptReader {
             return null;
         }
 
-        return new ConditionExecution(condition, ifExecution, elseExecution);
+        return new ComposedExecution(condition, ifExecution, elseExecution);
     }
 
     @Nullable

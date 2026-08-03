@@ -10,13 +10,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ConditionExecution implements Execution {
+public class ComposedExecution implements Execution {
 
     private final Condition condition;
     private final List<Execution> ifExecution;
     private final List<Execution> elseExecution;
 
-    public ConditionExecution(@Nullable Condition condition, @NotNull List<Execution> ifExecution, @NotNull List<Execution> elseExecution) {
+    public ComposedExecution(@Nullable Condition condition, @NotNull List<Execution> ifExecution, @NotNull List<Execution> elseExecution) {
         this.condition = condition;
         this.ifExecution = ifExecution;
         this.elseExecution = elseExecution;
