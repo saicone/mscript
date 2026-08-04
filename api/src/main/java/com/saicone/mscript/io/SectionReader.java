@@ -2,14 +2,33 @@ package com.saicone.mscript.io;
 
 import com.saicone.mscript.Section;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class SectionReader<T extends Section> {
+
+    @NotNull
+    @ApiStatus.Internal
+    public static <T extends Section> SectionReader<T> unary(@NotNull @Language("RegExp") String regex, @NotNull Function<String, T> constructor) {
+        return new SectionReader<>(regex) {
+            @Override
+            protected T read(@NotNull String id) {
+                return constructor.apply(id);
+            }
+
+            @Override
+            public T read(@NotNull String id, @Nullable Object context) {
+                return read(id);
+            }
+        };
+    }
 
     private final @Language("RegExp") String regex;
     private final Pattern pattern;
@@ -40,10 +59,12 @@ public class SectionReader<T extends Section> {
         return defaultKey;
     }
 
+    @UnknownNullability
     protected T read(@NotNull String id) {
         throw new IllegalStateException("Unsupported type: void");
     }
 
+    @UnknownNullability
     public T read(@NotNull String id, @Nullable Object context) {
         if (context == null) {
             return read(id);
@@ -62,22 +83,27 @@ public class SectionReader<T extends Section> {
         }
     }
 
+    @UnknownNullability
     protected T read(@NotNull String id, @NotNull Boolean context) {
         throw new IllegalStateException("Unsupported type: Boolean");
     }
 
+    @UnknownNullability
     protected T read(@NotNull String id, @NotNull Number context) {
         throw new IllegalStateException("Unsupported type: Number");
     }
 
+    @UnknownNullability
     protected T read(@NotNull String id, @NotNull String context) {
         throw new IllegalStateException("Unsupported type: String");
     }
 
+    @UnknownNullability
     protected T read(@NotNull String id, @NotNull Map<?, ?> context) {
         return read(id, context.get(this.defaultKey));
     }
 
+    @UnknownNullability
     protected T read(@NotNull String id, @NotNull List<?> context) {
         throw new IllegalStateException("Unsupported type: List");
     }
