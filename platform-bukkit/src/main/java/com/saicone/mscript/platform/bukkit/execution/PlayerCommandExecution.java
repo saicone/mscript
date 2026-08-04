@@ -6,22 +6,24 @@ import com.saicone.mscript.Result;
 import com.saicone.mscript.impl.SingleSection;
 import com.saicone.mscript.io.SectionReader;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ConsoleExecution extends SingleSection.Text implements Execution {
+public class PlayerCommandExecution extends SingleSection.Text implements Execution {
 
-    public static final SectionReader<ConsoleExecution> READER = reader("console(-?command)?", ConsoleExecution::new);
+    public static final SectionReader<PlayerCommandExecution> READER = reader("player(-?command)?", PlayerCommandExecution::new);
 
-    public ConsoleExecution(@Nullable Object object) {
+    public PlayerCommandExecution(@Nullable Object object) {
         super(object);
     }
 
     @Override
     public @NotNull Result run(@NotNull Context context) {
+        final Player player = context.get();
         final String command = getValue(context);
 
-        context.sync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
+        context.sync(() -> Bukkit.dispatchCommand(player, command));
 
         return Result.DONE;
     }

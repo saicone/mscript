@@ -1,23 +1,18 @@
 package com.saicone.mscript.platform.bukkit;
 
 import com.saicone.mscript.Execution;
-import com.saicone.mscript.Result;
 import com.saicone.mscript.io.SectionReader;
 import com.saicone.mscript.platform.bukkit.execution.BroadcastExecution;
-import com.saicone.mscript.platform.bukkit.execution.ChatExecution;
-import com.saicone.mscript.platform.bukkit.execution.ConsoleExecution;
-import com.saicone.mscript.platform.bukkit.execution.PlayerExecution;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
-import org.jetbrains.annotations.NotNull;
+import com.saicone.mscript.platform.bukkit.execution.PlayerChatExecution;
+import com.saicone.mscript.platform.bukkit.execution.ConsoleCommandExecution;
+import com.saicone.mscript.platform.bukkit.execution.PlayerCommandExecution;
 
 public final class BukkitExecutions {
 
     public static final SectionReader<? extends Execution> BROADCAST = BroadcastExecution.READER;
-    public static final SectionReader<? extends Execution> CHAT = ChatExecution.READER;
-    public static final SectionReader<? extends Execution> CONSOLE = ConsoleExecution.READER;
-    public static final SectionReader<? extends Execution> PLAYER = PlayerExecution.READER;
+    public static final SectionReader<? extends Execution> CHAT = PlayerChatExecution.READER;
+    public static final SectionReader<? extends Execution> CONSOLE = ConsoleCommandExecution.READER;
+    public static final SectionReader<? extends Execution> PLAYER = PlayerCommandExecution.READER;
 
     BukkitExecutions() {
     }

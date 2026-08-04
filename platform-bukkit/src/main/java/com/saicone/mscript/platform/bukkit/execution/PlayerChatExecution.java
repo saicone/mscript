@@ -9,11 +9,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ChatExecution extends SingleSection.Text implements Execution {
+public class PlayerChatExecution extends SingleSection.Text implements Execution {
 
-    public static final SectionReader<ChatExecution> READER = reader("chat|say", ChatExecution::new);
+    public static final SectionReader<PlayerChatExecution> READER = reader("(force-?)?(player-?)?(chat|say)", PlayerChatExecution::new);
 
-    public ChatExecution(@Nullable Object object) {
+    public PlayerChatExecution(@Nullable Object object) {
         super(object);
     }
 
