@@ -272,7 +272,7 @@ public class ScriptReader {
             id = s.substring(1, index).trim();
             context = s.substring(index + 1);
         } else {
-            final int index1 = s.indexOf(':');
+            final int index1 = s.indexOf(": ");
             final int index2 = s.indexOf('=');
             final int separator = index1 >= 0 && index2 >= 0 ? Math.min(index1, index2) : Math.max(index1, index2);
             if (separator > 0) {

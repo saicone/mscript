@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @ApiStatus.Internal
@@ -20,10 +21,15 @@ public abstract class SingleSection<T> implements Section {
 
     @NotNull
     protected static <T extends SingleSection<?>> SectionReader<T> reader(@NotNull @Language("RegExp") String regex, @NotNull Function<Object, T> constructor) {
+        return reader(regex, (id, object) -> constructor.apply(object));
+    }
+
+    @NotNull
+    protected static <T extends SingleSection<?>> SectionReader<T> reader(@NotNull @Language("RegExp") String regex, @NotNull BiFunction<String, Object, T> constructor) {
         return new SectionReader<>(regex) {
             @Override
             public T read(@NotNull String id, @Nullable Object context) {
-                return constructor.apply(context);
+                return constructor.apply(id, context);
             }
         };
     }

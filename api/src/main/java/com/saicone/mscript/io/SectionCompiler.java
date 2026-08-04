@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class SectionCompiler<T extends Section> {
 
@@ -40,7 +41,10 @@ public class SectionCompiler<T extends Section> {
             if (Modifier.isStatic(field.getModifiers()) && SectionReader.class.isAssignableFrom(field.getType())) {
                 try {
                     field.setAccessible(true);
-                    final Object value = field.get(null);
+                    Object value = field.get(null);
+                    if (value instanceof Supplier<?> supplier) {
+                        value = supplier.get();
+                    }
                     if (value instanceof SectionReader<?>) {
                         put((SectionReader<?>) value);
                     }
