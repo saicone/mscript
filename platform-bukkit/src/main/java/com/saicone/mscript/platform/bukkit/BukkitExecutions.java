@@ -6,13 +6,15 @@ import com.saicone.mscript.platform.bukkit.execution.BroadcastExecution;
 import com.saicone.mscript.platform.bukkit.execution.PlayerChatExecution;
 import com.saicone.mscript.platform.bukkit.execution.ConsoleCommandExecution;
 import com.saicone.mscript.platform.bukkit.execution.PlayerCommandExecution;
+import com.saicone.mscript.platform.bukkit.execution.ServerExecution;
 
 public final class BukkitExecutions {
 
     public static final SectionReader<? extends Execution> BROADCAST = BroadcastExecution.READER;
-    public static final SectionReader<? extends Execution> CHAT = PlayerChatExecution.READER;
-    public static final SectionReader<? extends Execution> CONSOLE = ConsoleCommandExecution.READER;
-    public static final SectionReader<? extends Execution> PLAYER = PlayerCommandExecution.READER;
+    public static final SectionReader<? extends Execution> CONSOLE_COMMAND = ConsoleCommandExecution.READER;
+    public static final SectionReader<? extends Execution> PLAYER_CHAT = PlayerChatExecution.READER;
+    public static final SectionReader<? extends Execution> PLAYER_COMMAND = PlayerCommandExecution.READER;
+    public static final SectionReader<? extends Execution> SERVER = ServerExecution.READER;
 
     BukkitExecutions() {
     }
