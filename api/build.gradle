@@ -1,11 +1,16 @@
 description = 'MScript API'
 
+repositories {
+    maven { url = uri('https://repo.opencollab.dev/main/') }
+}
+
 configurations {
     compileOnlyWith
 }
 
 dependencies {
     compileOnly 'net.luckperms:api:5.4'
+    compileOnly 'org.geysermc.floodgate:api:2.2.5-SNAPSHOT'
     compileOnlyWith 'io.github.miniplaceholders:miniplaceholders-api:3.2.0'
 
     testImplementation(platform('org.junit:junit-bom:5.14.3'))
