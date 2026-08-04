@@ -12,10 +12,10 @@ public final class Conditions {
     public static final SectionReader<? extends Condition> CHANCE = ChanceCondition.READER;
     public static final SectionReader<? extends Condition> PERMISSION = PermissionCondition.READER;
 
-    public static final SectionReader<Condition> PLAYER = SectionReader.unary("(is-?)player", id -> {
+    public static final SectionReader<Condition> PLAYER = SectionReader.unary("(is-?)?player", id -> {
         return context -> !context.getUniqueId().equals(Context.SERVER_ID);
     });
-    public static final SectionReader<Condition> CONSOLE = SectionReader.unary("(is-?)console", id -> {
+    public static final SectionReader<Condition> CONSOLE = SectionReader.unary("(is-?)?console", id -> {
         return context -> context.getUniqueId().equals(Context.SERVER_ID);
     });
 

@@ -152,6 +152,14 @@ public class ScriptReader {
 
     @Nullable
     public Condition readCondition(@NotNull String s) throws IOException {
+        // Unary condition declaration
+        if (!s.contains(" ")) {
+            final Condition condition = this.conditions.read(s, null);
+            if (condition != null) {
+                return condition;
+            }
+        }
+
         final ConditionReader reader = new ConditionReader(s) {
             @Override
             protected @NotNull Value<?> readValue(@NotNull String str) {

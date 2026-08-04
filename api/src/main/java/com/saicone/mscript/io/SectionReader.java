@@ -61,7 +61,7 @@ public class SectionReader<T extends Section> {
 
     @UnknownNullability
     protected T read(@NotNull String id) {
-        throw new IllegalStateException("Unsupported type: void");
+        throw new IllegalStateException("[" + id + "] Unsupported type: void");
     }
 
     @UnknownNullability
@@ -79,23 +79,23 @@ public class SectionReader<T extends Section> {
         } else if (context instanceof List<?>) {
             return read(id, (List<?>) context);
         } else {
-            throw new IllegalStateException("Unsupported type: " + context.getClass().getName());
+            throw new IllegalStateException("[" + id + "] Unsupported type: " + context.getClass().getName());
         }
     }
 
     @UnknownNullability
     protected T read(@NotNull String id, @NotNull Boolean context) {
-        throw new IllegalStateException("Unsupported type: Boolean");
+        throw new IllegalStateException("[" + id + "] Unsupported type: Boolean");
     }
 
     @UnknownNullability
     protected T read(@NotNull String id, @NotNull Number context) {
-        throw new IllegalStateException("Unsupported type: Number");
+        throw new IllegalStateException("[" + id + "] Unsupported type: Number");
     }
 
     @UnknownNullability
     protected T read(@NotNull String id, @NotNull String context) {
-        throw new IllegalStateException("Unsupported type: String");
+        throw new IllegalStateException("[" + id + "] Unsupported type: String");
     }
 
     @UnknownNullability
@@ -105,7 +105,7 @@ public class SectionReader<T extends Section> {
 
     @UnknownNullability
     protected T read(@NotNull String id, @NotNull List<?> context) {
-        throw new IllegalStateException("Unsupported type: List");
+        throw new IllegalStateException("[" + id + "] Unsupported type: List");
     }
 
     @Override
