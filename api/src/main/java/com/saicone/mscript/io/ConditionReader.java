@@ -140,6 +140,10 @@ public abstract class ConditionReader extends StringReader {
                 read();
                 yield readValue('"');
             }
+            case '`' -> {
+                read();
+                yield readValue('`');
+            }
             case '\'' -> {
                 read();
                 yield readValue('\'');
