@@ -70,7 +70,7 @@ public abstract class ConditionReader extends StringReader {
             return null;
         }
         if (this.depth != 0) {
-            throw new IOException("Unmatched parentheses in condition");
+            throw new IOException("Unmatched parentheses in condition, depth: " + this.depth);
         }
         return new Condition() {
             @Override
@@ -134,7 +134,15 @@ public abstract class ConditionReader extends StringReader {
             case '(' -> {
                 read();
                 this.depth++;
-                yield readOperation();
+                final Value<?> value = readOperation();
+                skipSpaces();
+                if (peek() == ')') {
+                    read();
+                    this.depth--;
+                } else {
+                    throw new IOException("Expected ')' to close parenthesis");
+                }
+                yield value;
             }
             case '"' -> {
                 read();
@@ -195,11 +203,8 @@ public abstract class ConditionReader extends StringReader {
             builder.append((char) read());
         }
 
-        if (peek == end) {
+        if (peek == end && (end == '"' || end == '`' || end == '\'')) {
             read();
-        } else if (peek == ')') {
-            read();
-            this.depth--;
         }
 
         if (end == '\'') {
@@ -222,6 +227,9 @@ public abstract class ConditionReader extends StringReader {
         }
 
         final char first = (char) peek;
+        if (first == ')') {
+            return null;
+        }
         final Set<Character> seconds = OPERATOR_CHARS.get(first);
         if (seconds == null) {
             throw new IOException("Invalid operator: '" + first + "'");
