@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ActionBarExecution extends SingleSection.Text implements Execution {
 
-    public static final SectionReader<ActionBarExecution> READER = reader("action-bar", ActionBarExecution::new);
+    public static final SectionReader<ActionBarExecution> READER = reader("action-?bar", ActionBarExecution::new);
 
     public ActionBarExecution(@Nullable Object object) {
         super(object);
