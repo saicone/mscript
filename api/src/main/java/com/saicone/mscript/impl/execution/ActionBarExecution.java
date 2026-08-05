@@ -19,7 +19,7 @@ public class ActionBarExecution extends SingleSection.Text implements Execution 
 
     @Override
     public @NotNull Result run(@NotNull Context context) {
-        context.audience().sendActionBar(Mini.get().parse(context.audience(), getValue(context)));
+        context.audience().sendActionBar(Mini.get().parse(context.pointer(), getValue(context)));
         return Result.DONE;
     }
 }

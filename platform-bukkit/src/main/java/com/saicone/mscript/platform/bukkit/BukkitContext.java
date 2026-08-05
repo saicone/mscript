@@ -48,6 +48,11 @@ public class BukkitContext extends AbstractComposedContext implements Context {
 
     @Override
     public @NotNull Audience audience() {
+        return Audiences.sender(source());
+    }
+
+    @Override
+    public @NotNull Audience pointer() {
         return Audiences.sender(get());
     }
 

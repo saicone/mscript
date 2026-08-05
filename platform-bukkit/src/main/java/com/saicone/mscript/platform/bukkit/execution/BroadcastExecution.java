@@ -29,7 +29,7 @@ public class BroadcastExecution extends SingleSection.TextList implements Execut
         final CommandSender sender = context.get();
         if (sender instanceof Player && Mini.get().isUsingMiniPlaceholders()) {
             final List<String> lines = getValue(context);
-            final Audience main = context.audience();
+            final Audience main = context.pointer();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 final Audience secondary = Audiences.player(player);
                 final Audience relational = Mini.get().relational(main, secondary);
@@ -41,9 +41,9 @@ public class BroadcastExecution extends SingleSection.TextList implements Execut
                 Audiences.console().sendMessage(Mini.get().parse(main, line));
             }
         } else {
-            final Audience audience = context.audience();
+            final Audience pointer = context.pointer();
             for (String line : getValue(context)) {
-                Audiences.all().sendMessage(Mini.get().parse(audience, line));
+                Audiences.all().sendMessage(Mini.get().parse(pointer, line));
             }
         }
 

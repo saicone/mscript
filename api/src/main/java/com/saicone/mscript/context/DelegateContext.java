@@ -34,6 +34,12 @@ public interface DelegateContext extends Context {
     }
 
     @Override
+    @NotNull
+    default Audience pointer() {
+        return delegate().pointer();
+    }
+
+    @Override
     default @NotNull <T> T get() {
         return delegate().get();
     }

@@ -20,7 +20,7 @@ public class MessageExecution extends SingleSection.TextList implements Executio
     @Override
     public @NotNull Result run(@NotNull Context context) {
         for (String line : getValue(context)) {
-            context.audience().sendMessage(Mini.get().parse(context.audience(), line));
+            context.audience().sendMessage(Mini.get().parse(context.pointer(), line));
         }
         return Result.DONE;
     }

@@ -58,8 +58,8 @@ public class TitleExecution implements Execution {
         final String title = this.title == null ? null : context.parse(this.title);
         final String subtitle = this.subtitle == null ? null : context.parse(this.subtitle);
         context.audience().showTitle(Title.title(
-                Mini.get().parseOrEmpty(context.audience(), title),
-                Mini.get().parseOrEmpty(context.audience(), subtitle),
+                Mini.get().parseOrEmpty(context.pointer(), title),
+                Mini.get().parseOrEmpty(context.pointer(), subtitle),
                 fadeIn,
                 stay,
                 fadeOut

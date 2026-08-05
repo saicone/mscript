@@ -16,17 +16,51 @@ public interface Context {
 
     UUID SERVER_ID = new UUID(0, 0);
 
+    /**
+     * Is the source of the script execution, usually the sender of the command or the entity that triggered the script.
+     *
+     * @return the source of the script execution
+     */
     @NotNull
     Object source();
 
+    /**
+     * Is the object that the source is acting on behalf of.<br>
+     * In other words, this is an impersonation of the source, and can be null if the source is not acting on behalf of anyone.
+     *
+     * @return the agent of the script execution
+     */
     @Nullable
     Object agent();
 
+    /**
+     * Is the audience that receive any message from the script.
+     *
+     * @return an audience
+     */
     @NotNull
     default Audience audience() {
         return (Audience) source();
     }
 
+    /**
+     * Is the audience that the script is currently pointing to.<br>
+     * For example, the pointer used for message parsing and can be different from source if the context contains an agent.
+     *
+     * @return an audience
+     */
+    @NotNull
+    default Audience pointer() {
+        return (Audience) get();
+    }
+
+    /**
+     * Get the object that the script is currently pointing to.<br>
+     * If the context contains an agent, it will return the agent, otherwise it will return the source.
+     *
+     * @return the object that the script is currently pointing to
+     * @param <T> the type of the object
+     */
     @NotNull
     @SuppressWarnings("unchecked")
     default <T> T get() {
@@ -37,12 +71,28 @@ public interface Context {
         return (T) source();
     }
 
+    /**
+     * Get the object that the script is currently pointing to and cast it to the specified type.<br>
+     * If the object is not of the specified type, a ClassCastException will be thrown.
+     *
+     * @param type the class to cast the object to
+     * @return     the object cast to the specified type
+     * @param <T>  the type of the object
+     */
     @NotNull
-    default <T> T get(@NotNull Class<T> type) {
+    default <T> T get(@NotNull Class<T> type) throws ClassCastException {
         final Object object = get();
         return type.cast(object);
     }
 
+    /**
+     * Get the object that the script is currently pointing to and cast it to the specified type if possible.<br>
+     * If the object is not of the specified type, an empty Optional will be returned.
+     *
+     * @param type the class to cast the object to
+     * @return     an Optional containing the object cast to the specified type, or an empty Optional if the object is not of the specified type
+     * @param <T>  the type of the object
+     */
     @NotNull
     default <T> Optional<T> getIf(@NotNull Class<T> type) {
         final Object object = get();
