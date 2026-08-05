@@ -101,8 +101,11 @@ public class ScriptTest {
         Execution execution = reader.readExecution(script);
         Result result = execution.run(context);
 
-        assertTrue(result.isDone());
         assertEquals(1000, Long.parseLong(context.parse("{delay}")));
+        // the last result on synchronized execution should be the delay, since the track got separated in that place
+        assertTrue(result.isDelayed());
+        // while on async execution we can get the real last result since we wait until the execution finish
+        assertTrue(execution.runAsync(context).join().isDone());
     }
 
     @Test
@@ -116,7 +119,8 @@ public class ScriptTest {
         Execution execution = reader.readExecution(script);
         Result result = execution.run(context);
 
-        assertTrue(result.isBreak());
+        // the break result doesn't actually return itself, it only breaks the track
+        assertTrue(result.isDone());
         Component message = context.source().actualMessage();
         assertEquals("First", PlainTextComponentSerializer.plainText().serialize(message));
     }
