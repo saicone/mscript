@@ -33,6 +33,7 @@ public class SectionCompiler<T extends Section> {
     }
 
     public boolean put(@NotNull SectionReader<?> reader) {
+        readers.remove(reader);
         return readers.add(reader);
     }
 

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TestPermissionCondition extends PermissionCondition {
 
-    public static final SectionReader<PermissionCondition> READER = reader(PermissionCondition.READER.regex(), PermissionCondition::new);
+    public static final SectionReader<TestPermissionCondition> READER = reader(PermissionCondition.READER.regex(), TestPermissionCondition::new);
 
     public TestPermissionCondition(@Nullable Object object) {
         super(object);
