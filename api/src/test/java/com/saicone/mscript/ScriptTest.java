@@ -295,12 +295,12 @@ public class ScriptTest {
 
         context.setDelay(0);
         Execution execution = reader.readExecution(script);
-        Result result = execution.run(context);
+        Result result = execution.runAsync(context).join();
 
         assertEquals(2000L, Long.parseLong(context.parse("{delay}")));
         Component message = context.source().actualMessage();
         String plainText = PlainTextComponentSerializer.plainText().serialize(message);
-        assertTrue(plainText.contains("Delayed message"));
+        assertTrue(plainText.contains("Script finished"));
     }
 
     @Test

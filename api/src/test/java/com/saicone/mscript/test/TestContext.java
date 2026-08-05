@@ -79,4 +79,10 @@ public class TestContext implements Context {
         this.delay += unit.toMillis(time);
         command.run();
     }
+
+    @Override
+    public void delayAsync(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
+        this.delay += unit.toMillis(time);
+        command.run();
+    }
 }

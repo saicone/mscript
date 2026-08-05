@@ -85,6 +85,11 @@ public interface DelegateContext extends Context {
     }
 
     @Override
+    default void delayAsync(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
+        delegate().delayAsync(time, unit, command);
+    }
+
+    @Override
     default <A extends Context> @NotNull A as(@NotNull Class<A> type) {
         return delegate().as(type);
     }

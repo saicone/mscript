@@ -7,10 +7,23 @@ import com.saicone.mscript.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ComposedExecution implements Execution {
+
+    private static final Iterator<Execution> EMPTY_ITERATOR = new Iterator<>() {
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Execution next() {
+            throw new UnsupportedOperationException("No elements in iterator");
+        }
+    };
 
     private final Condition condition;
     private final List<Execution> ifExecution;
@@ -25,6 +38,16 @@ public class ComposedExecution implements Execution {
     @Nullable
     public Condition condition() {
         return condition;
+    }
+
+    @NotNull
+    public List<Execution> ifExecution() {
+        return ifExecution;
+    }
+
+    @NotNull
+    public List<Execution> elseExecution() {
+        return elseExecution;
     }
 
     @Nullable
@@ -42,95 +65,121 @@ public class ComposedExecution implements Execution {
     }
 
     @NotNull
-    public List<Execution> ifExecution() {
-        return ifExecution;
-    }
+    public Iterator<Execution> iterator(@NotNull Context context) {
+        final List<Execution> run = execution(context);
+        if (run == null || run.isEmpty()) {
+            return EMPTY_ITERATOR;
+        }
 
-    @NotNull
-    public List<Execution> elseExecution() {
-        return elseExecution;
+        return new Iterator<>() {
+            final Iterator<Execution> main = run.iterator();
+            Iterator<Execution> sub;
+
+            @Override
+            public boolean hasNext() {
+                if (sub != null) {
+                    if (sub.hasNext()) {
+                        return true;
+                    } else {
+                        sub = null;
+                    }
+                }
+                return main.hasNext();
+            }
+
+            @Override
+            public Execution next() {
+                if (sub != null) {
+                    return sub.next();
+                } else {
+                    final Execution execution = main.next();
+                    if (execution instanceof ComposedExecution composed) {
+                        sub = composed.iterator(context);
+                        return next();
+                    } else {
+                        return execution;
+                    }
+                }
+            }
+        };
     }
 
     @Override
     public @NotNull Result run(@NotNull Context context) {
-        final List<Execution> run = execution(context);
-        if (run == null || run.isEmpty()) {
-            return Result.UNKNOWN;
-        }
-
-        return run(context, run, 0);
+        return runNow0(context, iterator(context));
     }
 
     @NotNull
-    protected Result run(@NotNull Context context, @NotNull List<Execution> run, int index) {
-        Result lastResult = Result.UNKNOWN;
-        for (int i = index; i < run.size(); i++) {
-            final Execution execution = run.get(i);
-            final Result result = execution.run(context);
-            if (result.isDone()) {
-                lastResult = result;
-            } else if (result.isContinue()) {
+    protected Result runNow0(@NotNull Context context, @NotNull Iterator<Execution> iterator) {
+        Result result = Result.UNKNOWN;
+
+        while (iterator.hasNext()) {
+            final Execution execution = iterator.next();
+            final Result current = execution.run(context);
+            if (current.isDone()) {
+                result = current;
+            } else if (current.isContinue()) {
                 continue;
-            } else if (result.isBreak()) {
+            } else if (current.isBreak()) {
                 break;
-            } else if (result.isReturn()) {
-                return result;
-            } else if (result.isDelayed()) {
-                // Execute delay outside the scope, since a synchronous execution cannot be delayed
-                final int next = i + 1;
-                context.delay(result.time(), result.unit(), () -> {
-                    run(context, run, next);
+            } else if (current.isReturn()) {
+                return current;
+            } else if (current.isDelayed()) {
+                result = current;
+                // Go outside the scope, since a synchronous execution cannot be delayed
+                context.delay(current.time(), current.unit(), () -> {
+                    runNow0(context, iterator);
                 });
-                // Tell the caller that the last execution is delayed
-                lastResult = result;
                 break;
             }
         }
 
-        return lastResult;
+        return result;
     }
 
     @Override
     public @NotNull CompletableFuture<Result> runAsync(@NotNull Context context) {
         final CompletableFuture<Result> future = new CompletableFuture<>();
         context.async(() -> {
-            final List<Execution> run = execution(context);
-            if (run == null || run.isEmpty()) {
-                future.complete(Result.UNKNOWN);
-                return;
-            }
-
-            runAsync(context, future, Result.UNKNOWN, run, 0);
+            runAsync0(context, iterator(context), future);
         });
         return future;
     }
 
-    protected void runAsync(@NotNull Context context, @NotNull CompletableFuture<Result> future, @NotNull Result lastResult, @NotNull List<Execution> run, int index) {
+    protected void runAsync0(@NotNull Context context, @NotNull Iterator<Execution> iterator, @NotNull CompletableFuture<Result> future) {
         try {
-            if (index < run.size()) {
-                final Execution execution = run.get(index);
-                execution.runAsync(context).whenComplete((result, throwable) -> {
-                    if (throwable != null) {
-                        future.completeExceptionally(throwable);
-                    } else if (result.isDone()) {
-                        runAsync(context, future, result, run, index + 1);
-                    } else if (result.isContinue()) {
-                        runAsync(context, future, lastResult, run, index + 1);
-                    } else if (result.isBreak()) {
-                        future.complete(lastResult);
-                    } else if (result.isReturn()) {
-                        future.complete(result);
-                    } else if (result.isDelayed()) {
-                        context.delay(result.time(), result.unit(), () -> {
-                            runAsync(context, future, lastResult, run, index + 1);
-                        });
-                    }
-                });
-            } else {
-                future.complete(lastResult);
-            }
+            runAsync1(context, iterator, future);
         } catch (Throwable t) {
             future.completeExceptionally(t);
         }
+    }
+
+    protected void runAsync1(@NotNull Context context, @NotNull Iterator<Execution> iterator, @NotNull CompletableFuture<Result> future) {
+        Result result = Result.UNKNOWN;
+
+        while (iterator.hasNext()) {
+            final Execution execution = iterator.next();
+            final Result current = execution.run(context);
+            if (current.isDone()) {
+                result = current;
+            } else if (current.isContinue()) {
+                continue;
+            } else if (current.isBreak()) {
+                break;
+            } else if (current.isReturn()) {
+                future.complete(current);
+                return;
+            } else if (current.isDelayed()) {
+                // This assignation doesn't really do anything, but I left it as remainder about how the execution works
+                result = current;
+                // Finish the execution outside the scope after delay
+                context.delayAsync(current.time(), current.unit(), () -> {
+                    runAsync0(context, iterator, future);
+                });
+                return;
+            }
+        }
+
+        future.complete(result);
     }
 }

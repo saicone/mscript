@@ -114,15 +114,23 @@ public class BukkitContext extends AbstractComposedContext implements Context {
 
     @Override
     public void delay(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
-        final long ticks = unit.toMillis(time) / 50;
-        if (ticks <= 0) {
-            throw new IllegalArgumentException("Delay time must be greater than 0");
-        }
-
         if (MULTITHREADING.get()) {
-            Bukkit.getGlobalRegionScheduler().runDelayed(this.plugin, task -> command.run(), ticks);
+            Bukkit.getGlobalRegionScheduler().runDelayed(this.plugin, task -> command.run(), ticks(time, unit));
         } else {
-            Bukkit.getScheduler().runTaskLater(this.plugin, command, ticks);
+            Bukkit.getScheduler().runTaskLater(this.plugin, command, ticks(time, unit));
+        }
+    }
+
+    @Override
+    public void delayAsync(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
+        if (MULTITHREADING.get()) {
+            if (this.source instanceof Entity entity) {
+                entity.getScheduler().runDelayed(this.plugin, task -> command.run(), null, ticks(time, unit));
+            } else {
+                Bukkit.getAsyncScheduler().runDelayed(this.plugin, task -> command.run(), time, unit);
+            }
+        } else {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, command, ticks(time, unit));
         }
     }
 
@@ -134,5 +142,13 @@ public class BukkitContext extends AbstractComposedContext implements Context {
     @Override
     public @NotNull ComposedContext replace(@NotNull String str, @NotNull Object value) {
         throw new IllegalStateException("The current context does not support literal replacement, use #composed() method instead");
+    }
+
+    private static long ticks(long time, @NotNull TimeUnit unit) {
+        final long ticks = unit.toMillis(time) / 50;
+        if (ticks <= 0) {
+            throw new IllegalArgumentException("Delay time must be greater than 0");
+        }
+        return ticks;
     }
 }

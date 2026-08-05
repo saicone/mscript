@@ -146,6 +146,10 @@ public interface Context {
         throw new UnsupportedOperationException("Delayed execution is not supported in this context");
     }
 
+    default void delayAsync(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
+        throw new UnsupportedOperationException("Delayed execution is not supported in this context");
+    }
+
     @NotNull
     @SuppressWarnings("unchecked")
     default <A extends Context> A as(@NotNull Class<A> type) {
