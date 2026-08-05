@@ -16,11 +16,8 @@ public interface Operator {
     enum Arithmetic implements Operator {
         ADD("+") {
             @Override
-            protected @NotNull Object eval0(@NotNull Object aObject, @NotNull Object bObject) {
-                if (aObject instanceof String && bObject instanceof String) {
-                    return aObject.toString() + bObject.toString();
-                }
-                return super.eval0(aObject, bObject);
+            protected @NotNull Object eval1(@NotNull Object aObject, @NotNull Object bObject) {
+                return aObject.toString() + bObject.toString();
             }
 
             @Override
@@ -83,7 +80,7 @@ public interface Operator {
             final BigDecimal aNumber = Types.BIG_DECIMAL.parseOrDefault(aObject, null);
             final BigDecimal bNumber = Types.BIG_DECIMAL.parseOrDefault(bObject, null);
             if (aNumber == null || bNumber == null) {
-                throw new UnsupportedOperationException("Cannot eval non-numeric value on operation: '" + aObject + " " + this + " " + bObject + "'");
+                return eval1(aObject, bObject);
             }
 
             final BigDecimal result = eval(aNumber, bNumber).stripTrailingZeros();
@@ -94,6 +91,11 @@ public interface Operator {
             } else {
                 return integerResult(aObject, bObject, result);
             }
+        }
+
+        @NotNull
+        protected Object eval1(@NotNull Object aObject, @NotNull Object bObject) {
+            throw new UnsupportedOperationException("Cannot eval non-numeric value on operation: '" + aObject + " " + this + " " + bObject + "'");
         }
 
         @NotNull
@@ -119,7 +121,13 @@ public interface Operator {
                     return result.floatValue();
                 }
             }
-            return result;
+
+            // Avoid big number if possible
+            if (NumberParser.DOUBLE.isInRange(result)) {
+                return result.doubleValue();
+            } else {
+                return result;
+            }
         }
 
         @NotNull
@@ -143,7 +151,13 @@ public interface Operator {
                     return result.byteValue();
                 }
             }
-            return result;
+
+            // Avoid big number if possible
+            if (NumberParser.LONG.isInRange(result)) {
+                return result.longValue();
+            } else {
+                return result.toBigInteger();
+            }
         }
     }
 
