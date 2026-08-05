@@ -103,7 +103,7 @@ public abstract class ConditionReader extends StringReader {
             }
 
             final int depthBefore = this.depth;
-            final Value<?> bValue = readValue();
+            final Value<?> bValue = operator instanceof Operator.Logical || operator instanceof Operator.Bitwise ? readOperation() : readValue();
             if (bValue == null) {
                 throw new IOException("Expected value after operator");
             }
