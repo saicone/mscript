@@ -1,20 +1,38 @@
+import org.gradle.api.attributes.java.TargetJvmVersion
+
 description = 'MScript Platform Bukkit'
 
 repositories {
-    maven { url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/') }
+    maven { url = uri('https://repo.papermc.io/repository/maven-public/') }
     maven { url = uri('https://repo.extendedclip.com/releases/') }
+}
+
+configurations.configureEach {
+    if (canBeResolved) {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+        }
+    }
 }
 
 dependencies {
     api project(':api')
-    compileOnly 'org.spigotmc:spigot-api:26.2-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:26.2.build.92-stable'
     compileOnly 'net.kyori:adventure-platform-bukkit:4.4.1'
     compileOnly 'me.clip:placeholderapi:2.12.3'
     compileOnly('com.github.MilkBowl:VaultAPI:1.7.1') { transitive = false }
 }
 
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
 javadoc {
     options {
-        links 'https://hub.spigotmc.org/javadocs/spigot/'
+        links 'https://jd.papermc.io/paper/26.2/'
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
 }

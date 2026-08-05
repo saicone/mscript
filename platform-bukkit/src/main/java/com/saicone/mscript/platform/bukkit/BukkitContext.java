@@ -5,12 +5,13 @@ import com.saicone.mscript.Context;
 import com.saicone.mscript.context.AbstractComposedContext;
 import com.saicone.mscript.platform.bukkit.util.Audiences;
 import com.saicone.mscript.platform.bukkit.util.PAPI;
+import com.saicone.mscript.util.Lazy;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 
 public class BukkitContext extends AbstractComposedContext implements Context {
+
+    private static final Lazy<Boolean> MULTITHREADING = Lazy.of(() -> {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    });
 
     protected final Plugin plugin;
     protected final CommandSender source;
@@ -59,7 +69,7 @@ public class BukkitContext extends AbstractComposedContext implements Context {
     @Override
     public @NotNull UUID getUniqueId() {
         final CommandSender sender = get();
-        if (sender instanceof Player player) {
+        if (sender instanceof Entity player) {
             return player.getUniqueId();
         } else {
             return Context.SERVER_ID;
@@ -76,11 +86,11 @@ public class BukkitContext extends AbstractComposedContext implements Context {
         return result;
     }
 
-    // TODO: Add multi-threaded server support
-
     @Override
     public void sync(@NotNull Runnable command) {
-        if (Bukkit.isPrimaryThread()) {
+        if (MULTITHREADING.get()) {
+            Bukkit.getGlobalRegionScheduler().run(this.plugin, task -> command.run());
+        } else if (Bukkit.isPrimaryThread()) {
             command.run();
         } else {
             Bukkit.getScheduler().runTask(this.plugin, command);
@@ -89,7 +99,13 @@ public class BukkitContext extends AbstractComposedContext implements Context {
 
     @Override
     public void async(@NotNull Runnable command) {
-        if (Bukkit.isPrimaryThread()) {
+        if (MULTITHREADING.get()) {
+            if (this.source instanceof Entity entity) {
+                entity.getScheduler().run(this.plugin, task -> command.run(), null);
+            } else {
+                Bukkit.getAsyncScheduler().runNow(this.plugin, task -> command.run());
+            }
+        } else if (Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, command);
         } else {
             command.run();
@@ -103,7 +119,11 @@ public class BukkitContext extends AbstractComposedContext implements Context {
             throw new IllegalArgumentException("Delay time must be greater than 0");
         }
 
-        Bukkit.getScheduler().runTaskLater(this.plugin, command, ticks);
+        if (MULTITHREADING.get()) {
+            Bukkit.getGlobalRegionScheduler().runDelayed(this.plugin, task -> command.run(), ticks);
+        } else {
+            Bukkit.getScheduler().runTaskLater(this.plugin, command, ticks);
+        }
     }
 
     @Override
