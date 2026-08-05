@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
 
@@ -49,7 +50,7 @@ public class BukkitScriptReader extends ScriptReader {
     }
 
     @Override
-    public @Nullable Condition readCondition(@Nullable Object object) throws IOException {
+    public @UnknownNullability Condition readCondition(@Nullable Object object) throws IOException {
         if (object instanceof ConfigurationSection) {
             return readCondition(ConfigSection.toMap((ConfigurationSection) object));
         }
@@ -57,7 +58,7 @@ public class BukkitScriptReader extends ScriptReader {
     }
 
     @Override
-    public @Nullable Execution readExecution(@Nullable Object object) throws IOException {
+    public @UnknownNullability Execution readExecution(@Nullable Object object) throws IOException {
         if (object instanceof ConfigurationSection) {
             return readExecution(ConfigSection.toMap((ConfigurationSection) object));
         }

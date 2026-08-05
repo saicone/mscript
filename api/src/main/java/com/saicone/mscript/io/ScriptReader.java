@@ -9,6 +9,7 @@ import com.saicone.mscript.impl.Executions;
 import com.saicone.types.Types;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class ScriptReader {
         return Value.literal(s);
     }
 
-    @Nullable
+    @UnknownNullability
     public Condition readCondition(@Nullable Object object) throws IOException {
         if (object instanceof List<?>) {
             return readCondition((List<?>) object);
@@ -82,7 +83,7 @@ public class ScriptReader {
         return null;
     }
 
-    @Nullable
+    @UnknownNullability
     public Condition readCondition(@NotNull List<?> list) throws IOException {
         final List<Condition> conditions = new ArrayList<>();
 
@@ -115,7 +116,7 @@ public class ScriptReader {
         };
     }
 
-    @Nullable
+    @UnknownNullability
     public Condition readCondition(@NotNull Map<?, ?> map) {
         final List<Condition> conditions = new ArrayList<>();
 
@@ -150,7 +151,7 @@ public class ScriptReader {
         };
     }
 
-    @Nullable
+    @UnknownNullability
     public Condition readCondition(@NotNull String s) throws IOException {
         // Unary condition declaration
         if (!s.contains(" ")) {
@@ -174,7 +175,7 @@ public class ScriptReader {
         }
     }
 
-    @Nullable
+    @UnknownNullability
     public Execution readExecution(@Nullable Object object) throws IOException {
         if (object instanceof List<?>) {
             return readExecution((List<?>) object);
@@ -187,7 +188,7 @@ public class ScriptReader {
         }
     }
 
-    @Nullable
+    @UnknownNullability
     public Execution readExecution(@NotNull List<?> list) throws IOException {
         final List<Execution> executions = readExecution0(list);
 
@@ -216,7 +217,7 @@ public class ScriptReader {
         return executions;
     }
 
-    @Nullable
+    @UnknownNullability
     public Execution readExecution(@NotNull Map<?, ?> map) throws IOException {
         Condition condition = null;
         final List<Execution> ifExecution = new ArrayList<>();
@@ -264,7 +265,7 @@ public class ScriptReader {
         return new ComposedExecution(condition, ifExecution, elseExecution);
     }
 
-    @Nullable
+    @UnknownNullability
     public Execution readExecution(@NotNull String s) {
         if (s.isBlank()) {
             return null;

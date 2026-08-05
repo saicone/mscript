@@ -16,6 +16,12 @@ dependencies {
     testImplementation(platform('org.junit:junit-bom:5.14.3'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+
+    testImplementation 'net.kyori:adventure-api:4.26.1'
+    testImplementation 'net.kyori:adventure-text-minimessage:4.26.1'
+    testImplementation 'net.kyori:adventure-text-serializer-legacy:4.26.1'
+    testImplementation 'net.kyori:adventure-text-serializer-plain:4.26.1'
+    testImplementation 'com.saicone:types:1.4.3'
 }
 
 java {
