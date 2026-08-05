@@ -10,15 +10,18 @@ import java.util.concurrent.TimeUnit;
 
 public class TestContext implements Context {
 
-    public static Map<String, String> REPLACEMENTS = Map.of(
-            "{test_string1}", "STRING",
-            "{test_string2}", "S T R I N G",
-            "{test_boolean_true}", "true",
-            "{test_boolean_false}", "false",
-            "{test_boolean_yes}", "yes",
-            "{test_boolean_no}", "no",
-            "{test_integer}", "1234",
-            "{test_decimal}", "1234.56"
+    public static Map<String, String> REPLACEMENTS = Map.ofEntries(
+            Map.entry("{test_string1}", "STRING"),
+            Map.entry("{test_string2}", "S T R I N G"),
+            Map.entry("{test_string3}", "{test_string3}"),
+            Map.entry("{test_boolean_true}", "true"),
+            Map.entry("{test_boolean_false}", "false"),
+            Map.entry("{test_boolean_yes}", "yes"),
+            Map.entry("{test_boolean_no}", "no"),
+            Map.entry("{test_integer}", "1234"),
+            Map.entry("{test_integer2}", "5000"),
+            Map.entry("{test_integer3}", "42"),
+            Map.entry("{test_decimal}", "1234.56")
     );
 
     private final TestSender source;

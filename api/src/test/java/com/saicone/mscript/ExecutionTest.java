@@ -3,6 +3,7 @@ package com.saicone.mscript;
 import com.saicone.mscript.io.ScriptReader;
 import com.saicone.mscript.test.TestContext;
 import com.saicone.mscript.test.TestSender;
+import com.saicone.mscript.test.io.TestScriptReader;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ public class ExecutionTest {
 
     @BeforeEach
     void setUp() {
-        reader = new ScriptReader();
+        reader = new TestScriptReader();
         context = new TestContext(TestSender.player("TestPlayer"), null);
         context.setDelay(0);
     }
@@ -106,5 +107,88 @@ public class ExecutionTest {
 
         assertTrue(result.isReturn());
         assertEquals("1234", result.value());
+    }
+
+    @Test
+    void testMessageWithLegacyAmpersand() throws IOException {
+        Execution exec = reader.readExecution("message: &aHello &cWorld");
+        exec.run(context);
+
+        Component message = context.source().actualMessage();
+        assertNotNull(message);
+        String plainText = PlainTextComponentSerializer.plainText().serialize(message);
+        assertEquals("Hello World", plainText);
+    }
+
+    @Test
+    void testMessageWithLegacySection() throws IOException {
+        Execution exec = reader.readExecution("message: §aHello §cWorld");
+        exec.run(context);
+
+        Component message = context.source().actualMessage();
+        assertNotNull(message);
+        String plainText = PlainTextComponentSerializer.plainText().serialize(message);
+        assertEquals("Hello World", plainText);
+    }
+
+    @Test
+    void testMessageWithMiniMessage() throws IOException {
+        Execution exec = reader.readExecution("message: <red>Hello</red> <blue>World</blue>");
+        exec.run(context);
+
+        Component message = context.source().actualMessage();
+        assertNotNull(message);
+        String plainText = PlainTextComponentSerializer.plainText().serialize(message);
+        assertEquals("Hello World", plainText);
+    }
+
+    @Test
+    void testMessageWithHexColors() throws IOException {
+        Execution exec = reader.readExecution("message: &#FF5555Hello &#FF5555World");
+        exec.run(context);
+
+        Component message = context.source().actualMessage();
+        assertNotNull(message);
+        String plainText = PlainTextComponentSerializer.plainText().serialize(message);
+        assertEquals("Hello World", plainText);
+    }
+
+    @Test
+    void testActionBarWithLegacy() throws IOException {
+        Execution exec = reader.readExecution("actionbar: &e&lWarning: {test_integer}");
+        exec.run(context);
+
+        Component actionBar = context.source().actualActionBar();
+        assertNotNull(actionBar);
+        String plainText = PlainTextComponentSerializer.plainText().serialize(actionBar);
+        assertEquals("Warning: 1234", plainText);
+    }
+
+    @Test
+    void testMessageWithMixedFormats() throws IOException {
+        Execution exec = reader.readExecution("message: &aLegacy <red>and</red> MiniMessage");
+        exec.run(context);
+
+        Component message = context.source().actualMessage();
+        assertNotNull(message);
+        String plainText = PlainTextComponentSerializer.plainText().serialize(message);
+        assertTrue(plainText.contains("Legacy"));
+        assertTrue(plainText.contains("and"));
+        assertTrue(plainText.contains("MiniMessage"));
+    }
+
+    @Test
+    void testMultipleMessagesWithReplacements() throws IOException {
+        Execution exec = reader.readExecution(List.of(
+                "message: &aFirst: {test_string1}",
+                "message: <blue>Second: {test_integer}</blue>",
+                "message: §eThird: {test_decimal}"
+        ));
+        exec.run(context);
+
+        Component message = context.source().actualMessage();
+        String plainText = PlainTextComponentSerializer.plainText().serialize(message);
+        assertTrue(plainText.contains("Third"));
+        assertTrue(plainText.contains("1234.56"));
     }
 }
