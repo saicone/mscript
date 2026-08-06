@@ -6,12 +6,14 @@ import com.saicone.mscript.context.AbstractComposedContext;
 import com.saicone.mscript.platform.bukkit.util.Audiences;
 import com.saicone.mscript.platform.bukkit.util.PAPI;
 import com.saicone.mscript.util.Lazy;
+import com.saicone.mscript.util.Mini;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +41,15 @@ public class BukkitContext extends AbstractComposedContext implements Context {
         this.plugin = plugin;
         this.source = source;
         this.agent = agent;
+
+        attribute("context", this);
+        attribute("plugin", plugin);
+        if (source instanceof Player player) {
+            attribute("player", player);
+        }
+        attribute("server", Bukkit.getServer());
+
+        function("minimessage", object -> Mini.get().parse(pointer(), object));
     }
 
     @NotNull
