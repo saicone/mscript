@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class ScriptReader {
 
     public static Pattern IF_PATTERN = Pattern.compile("if|(meet-?)?conditions?", Pattern.CASE_INSENSITIVE);
-    public static Pattern RUN_PATTERN = Pattern.compile("run|execut(e|ions?)|actions?", Pattern.CASE_INSENSITIVE);
+    public static Pattern RUN_PATTERN = Pattern.compile("run|execut(e|ions?)|actions?|then", Pattern.CASE_INSENSITIVE);
     public static Pattern ELSE_PATTERN = Pattern.compile("else(-?(run|execut(e|ions?)|actions?))?|deny", Pattern.CASE_INSENSITIVE);
 
     protected final SectionCompiler<Condition> conditions;

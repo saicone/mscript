@@ -5,6 +5,7 @@ import com.saicone.mscript.Context;
 import com.saicone.mscript.context.AbstractComposedContext;
 import com.saicone.mscript.platform.bukkit.util.Audiences;
 import com.saicone.mscript.platform.bukkit.util.PAPI;
+import com.saicone.mscript.platform.bukkit.util.PluginSource;
 import com.saicone.mscript.util.Lazy;
 import com.saicone.mscript.util.Mini;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -32,6 +33,11 @@ public class BukkitContext extends AbstractComposedContext implements Context {
             return false;
         }
     });
+
+    @NotNull
+    public static BukkitContext of(@NotNull CommandSender sender) {
+        return new BukkitContext(PluginSource.unchecked(), sender, null);
+    }
 
     protected final Plugin plugin;
     protected final CommandSender source;
