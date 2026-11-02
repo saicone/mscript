@@ -1,3 +1,5 @@
+import org.gradle.api.attributes.java.TargetJvmVersion
+
 allprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
@@ -24,6 +26,16 @@ subprojects {
 
     apply from: "$rootDir/gradle/publish-config.gradle"
 
+    // Override the target JVM version on all configurations
+    // This allows to use dependencies that require a higher JVM version than the project itself
+    configurations.configureEach {
+        if (canBeResolved) {
+            attributes {
+                attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+            }
+        }
+    }
+
     dependencies {
         compileOnlyApi 'net.kyori:adventure-api:4.26.1'
         compileOnlyApi 'net.kyori:adventure-text-minimessage:4.26.1'
@@ -40,9 +52,16 @@ subprojects {
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        // Also set the toolchain language version to a higher version
+        toolchain.languageVersion.set(JavaLanguageVersion.of(25))
         withSourcesJar()
         withJavadocJar()
+    }
+
+    // But compile the project itself in a lower version for compatibility purposes
+    // This configuration will not collide with the toolchain language version, since we previously set the target JVM version on all configurations
+    tasks.withType(JavaCompile).configureEach {
+        options.release = 21
     }
 
     javadoc {
@@ -84,9 +103,14 @@ def javadocProjects = [
 tasks.register('allJavadoc', Javadoc) {
     group = 'documentation'
 
-    source javadocProjects.collect { project(it).sourceSets.main.allJava }
-    classpath = files(javadocProjects.collect { project(it).sourceSets.main.compileClasspath }) +
-                files(javadocProjects.collect { project(it).configurations.findByName('compileOnlyWith') }.findAll { it != null })
+    source javadocProjects.collect {
+        project(it).sourceSets.main.allJava
+    }
+    classpath = files(
+            javadocProjects.collect {
+                project(it).sourceSets.main.compileClasspath
+            }
+    )
     javadocTool.set(javaToolchains.javadocToolFor {
         languageVersion.set(JavaLanguageVersion.of(25))
     })
@@ -98,5 +122,5 @@ tasks.register('allJavadoc', Javadoc) {
         allLinks.each { link -> links link }
     }
 
-    destinationDir = file(project.layout.buildDirectory.dir('docs/all-javadoc'))
+    destinationDirectory = layout.buildDirectory.dir('docs/all-javadoc')
 }

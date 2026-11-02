@@ -4,14 +4,10 @@ repositories {
     maven { url = uri('https://repo.opencollab.dev/main/') }
 }
 
-configurations {
-    compileOnlyWith
-}
-
 dependencies {
     compileOnly 'net.luckperms:api:5.4'
     compileOnly 'org.geysermc.floodgate:api:2.2.5-SNAPSHOT'
-    compileOnlyWith 'io.github.miniplaceholders:miniplaceholders-api:3.2.0'
+    compileOnly 'io.github.miniplaceholders:miniplaceholders-api:3.2.0'
 
     testImplementation(platform('org.junit:junit-bom:5.14.3'))
     testImplementation('org.junit.jupiter:junit-jupiter')
@@ -22,19 +18,6 @@ dependencies {
     testImplementation 'net.kyori:adventure-text-serializer-legacy:4.26.1'
     testImplementation 'net.kyori:adventure-text-serializer-plain:4.26.1'
     testImplementation 'com.saicone:types:1.4.3'
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
-}
-
-javadoc {
-    classpath += configurations.compileOnlyWith
-}
-
-tasks.withType(JavaCompile).configureEach {
-    classpath += configurations.compileOnlyWith
-    options.release = 21
 }
 
 test {
