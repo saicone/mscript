@@ -16,10 +16,23 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * Broadcast execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class BroadcastExecution extends SingleSection.TextList implements Execution {
 
+    /**
+     * Broadcast execution reader.
+     */
     public static final SectionReader<BroadcastExecution> READER = reader("(mini-?)?broadcast-?(message|msg)?", BroadcastExecution::new);
 
+    /**
+     * Constructs a new broadcast execution.
+     *
+     * @param object a string or list of strings representing the messages to broadcast
+     */
     public BroadcastExecution(@Nullable Object object) {
         super(object);
     }

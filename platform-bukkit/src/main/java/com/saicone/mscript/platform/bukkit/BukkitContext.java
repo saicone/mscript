@@ -23,6 +23,14 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 
+/**
+ * Context implementation for Bukkit platform.<br>
+ * This context is used to execute scripts in a Bukkit environment, providing access to the plugin,
+ * command sender, and other Bukkit-specific features.<br>
+ * On multithreaded servers this context will use the player entity scheduler for async tasks.<br>
+ *
+ * @author Rubenicos
+ */
 public class BukkitContext extends AbstractComposedContext implements Context {
 
     private static final Lazy<Boolean> MULTITHREADING = Lazy.init(() -> {
@@ -34,15 +42,40 @@ public class BukkitContext extends AbstractComposedContext implements Context {
         }
     });
 
+    /**
+     * Creates a new BukkitContext with the specified command sender as the source.
+     *
+     * @param sender the command sender that is the source of the script execution
+     * @return       a newly generated BukkitContext instance
+     */
     @NotNull
     public static BukkitContext of(@NotNull CommandSender sender) {
         return new BukkitContext(PluginSource.unchecked(), sender, null);
+    }
+
+    /**
+     * Creates a new BukkitContext with the specified plugin, source, and agent.
+     *
+     * @param plugin the plugin associated with this context
+     * @param sender the command sender that is the source of the script execution
+     * @return       a newly generated BukkitContext instance
+     */
+    @NotNull
+    public static BukkitContext of(@NotNull Plugin plugin, @NotNull CommandSender sender) {
+        return new BukkitContext(plugin, sender, null);
     }
 
     protected final Plugin plugin;
     protected final CommandSender source;
     protected CommandSender agent;
 
+    /**
+     * Constructs a new BukkitContext with the specified plugin, source, and agent.
+     *
+     * @param plugin the plugin associated with this context
+     * @param source the command sender that is the source of the script execution
+     * @param agent  the command sender that is the agent of the script execution, can be null
+     */
     public BukkitContext(@NotNull Plugin plugin, @NotNull CommandSender source, @Nullable CommandSender agent) {
         this.plugin = plugin;
         this.source = source;

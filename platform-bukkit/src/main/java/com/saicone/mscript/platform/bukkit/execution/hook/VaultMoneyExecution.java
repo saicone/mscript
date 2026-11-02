@@ -15,6 +15,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+/**
+ * Vault money execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class VaultMoneyExecution extends SingleSection<Double> implements Execution {
 
     private static final Lazy<Object> ECONOMY = Lazy.init(() -> {
@@ -27,6 +32,11 @@ public class VaultMoneyExecution extends SingleSection<Double> implements Execut
         return null;
     });
 
+    /**
+     * Constructs a new vault money execution reader.
+     *
+     * @return a section reader for vault money execution, or null if Vault is not enabled
+     */
     @Nullable
     public static SectionReader<VaultMoneyExecution> reader() {
         if (!Bukkit.getPluginManager().isPluginEnabled("Vault")) {
@@ -47,6 +57,12 @@ public class VaultMoneyExecution extends SingleSection<Double> implements Execut
 
     private final Mode mode;
 
+    /**
+     * Constructs a new vault money execution.
+     *
+     * @param mode   the mode of the execution (GIVE, TAKE, SET)
+     * @param object a double representing the amount of money to give/take/set
+     */
     public VaultMoneyExecution(@NotNull Mode mode, @Nullable Object object) {
         super(object);
         this.mode = mode;
@@ -79,6 +95,9 @@ public class VaultMoneyExecution extends SingleSection<Double> implements Execut
         return Result.DONE;
     }
 
+    /**
+     * The mode of the vault money execution.
+     */
     public enum Mode {
         GIVE,
         TAKE,

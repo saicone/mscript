@@ -11,6 +11,12 @@ import com.saicone.mscript.platform.bukkit.execution.hook.VaultMoneyExecution;
 
 import java.util.function.Supplier;
 
+/**
+ * A collection of built-in Bukkit executions.
+ *
+ * @author Rubenicos
+ */
+@SuppressWarnings("unused")
 public final class BukkitExecutions {
 
     public static final SectionReader<? extends Execution> BROADCAST = BroadcastExecution.READER;

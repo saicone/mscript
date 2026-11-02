@@ -18,19 +18,35 @@ import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
 
+/**
+ * Script reader implementation for Bukkit platform.<br>
+ * This reader allows to read scripts from a Bukkit configuration
+ * and convert single placeholders declarations into a pre-compiled placeholder value.
+ *
+ * @author Rubenicos
+ */
 public class BukkitScriptReader extends ScriptReader {
 
     public static final BukkitScriptReader INSTANCE = new BukkitScriptReader();
 
+    /**
+     * Constructs a new BukkitScriptReader with default condition and execution compilers.
+     */
     public BukkitScriptReader() {
         this(new BukkitSectionCompiler<>(), new BukkitSectionCompiler<>());
-    }
-
-    public BukkitScriptReader(@NotNull BukkitSectionCompiler<Condition> conditions, @NotNull BukkitSectionCompiler<Execution> executions) {
-        super(conditions, executions);
 
         this.conditions.putAll(BukkitConditions.class);
         this.executions.putAll(BukkitExecutions.class);
+    }
+
+    /**
+     * Constructs a new BukkitScriptReader with the given condition and execution compilers.
+     *
+     * @param conditions the condition compiler
+     * @param executions the execution compiler
+     */
+    public BukkitScriptReader(@NotNull BukkitSectionCompiler<Condition> conditions, @NotNull BukkitSectionCompiler<Execution> executions) {
+        super(conditions, executions);
     }
 
     @Override

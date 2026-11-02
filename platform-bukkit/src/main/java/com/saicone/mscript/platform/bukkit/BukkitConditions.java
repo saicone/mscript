@@ -5,6 +5,12 @@ import com.saicone.mscript.io.SectionReader;
 import com.saicone.mscript.platform.bukkit.condition.BukkitPermissionCondition;
 import com.saicone.mscript.platform.bukkit.condition.WorldCondition;
 
+/**
+ * A collection of built-in Bukkit conditions.
+ *
+ * @author Rubenicos
+ */
+@SuppressWarnings("unused")
 public final class BukkitConditions {
 
     public static final SectionReader<? extends Condition> PERMISSION = BukkitPermissionCondition.READER;

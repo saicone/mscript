@@ -7,10 +7,21 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Bukkit implementation of {@link PermissionCondition}.
+ */
 public class BukkitPermissionCondition extends PermissionCondition {
 
+    /**
+     * Bukkit permission condition reader.
+     */
     public static final SectionReader<BukkitPermissionCondition> READER = reader(PermissionCondition.READER.regex(), BukkitPermissionCondition::new);
 
+    /**
+     * Constructs a new BukkitPermissionCondition.
+     *
+     * @param object a string representing the permission (e.g. "myplugin.mypermission")
+     */
     public BukkitPermissionCondition(@Nullable Object object) {
         super(object);
     }

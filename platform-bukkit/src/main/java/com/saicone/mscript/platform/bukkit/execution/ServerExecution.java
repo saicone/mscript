@@ -13,12 +13,25 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Server execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class ServerExecution extends SingleSection.Text implements Execution {
 
     private static final String BUNGEECORD_CHANNEL = "BungeeCord";
 
+    /**
+     * Server execution reader.
+     */
     public static final SectionReader<ServerExecution> READER = reader("connect|proxy|bungee|velocity|server", ServerExecution::new);
 
+    /**
+     * Constructs a new server execution.
+     *
+     * @param object a string representing the server name to connect to
+     */
     public ServerExecution(@Nullable Object object) {
         super(object);
     }

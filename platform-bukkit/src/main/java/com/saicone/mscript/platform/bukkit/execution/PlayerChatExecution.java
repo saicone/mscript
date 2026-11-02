@@ -9,10 +9,23 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Player chat execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class PlayerChatExecution extends SingleSection.Text implements Execution {
 
+    /**
+     * Player chat execution reader.
+     */
     public static final SectionReader<PlayerChatExecution> READER = reader("(force-?)?(player-?)?(chat|say)", PlayerChatExecution::new);
 
+    /**
+     * Constructs a new player chat execution.
+     *
+     * @param object a string representing the message to send
+     */
     public PlayerChatExecution(@Nullable Object object) {
         super(object);
     }

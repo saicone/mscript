@@ -9,10 +9,23 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Console command execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class ConsoleCommandExecution extends SingleSection.Text implements Execution {
 
+    /**
+     * Console command execution reader.
+     */
     public static final SectionReader<ConsoleCommandExecution> READER = reader("console(-?command)?", ConsoleCommandExecution::new);
 
+    /**
+     * Constructs a new console command execution.
+     *
+     * @param object a string representing the command to execute
+     */
     public ConsoleCommandExecution(@Nullable Object object) {
         super(object);
     }

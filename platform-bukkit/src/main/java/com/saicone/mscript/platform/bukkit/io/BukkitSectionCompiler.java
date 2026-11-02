@@ -13,16 +13,39 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Section compiler implementation for Bukkit platform.<br>
+ * This compiler allows to compile sections from a Bukkit configuration.
+ *
+ * @author Rubenicos
+ *
+ * @param <S> the type of section to compile
+ */
 public class BukkitSectionCompiler<S extends Section> extends SectionCompiler<S> {
 
+    /**
+     * Constructs a new BukkitSectionCompiler with an empty set of readers.
+     */
     public BukkitSectionCompiler() {
         this(new LinkedHashSet<>());
     }
 
+    /**
+     * Constructs a new BukkitSectionCompiler with the given set of readers.
+     *
+     * @param readers the set of readers to use
+     */
     public BukkitSectionCompiler(@NotNull Set<SectionReader<?>> readers) {
         super(readers);
     }
 
+    /**
+     * Create and append a section reader that applies the given function to the section identifier and a {@link ConfigurationSection} context.
+     *
+     * @param regex    the regular expression to match section identifiers
+     * @param function the function to apply to the section identifier and context
+     * @return         a newly generated section reader
+     */
     @NotNull
     public SectionReader<S> compileConfig(@NotNull @Language("RegExp") String regex, @NotNull CompilerFunction<ConfigurationSection, S> function) {
         final SectionReader<S> reader = reader(regex, (id, context) -> {
