@@ -10,10 +10,23 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 
+/**
+ * Chance condition implementation.
+ *
+ * @author Rubenicos
+ */
 public class ChanceCondition extends SingleSection<Double> implements Condition {
 
+    /**
+     * Chance condition reader.
+     */
     public static final SectionReader<ChanceCondition> READER = reader("chance|prob(ability)?", ChanceCondition::new);
 
+    /**
+     * Constructs a new chance condition.
+     *
+     * @param object a number or a string representing the chance (e.g. 0.5, 50%, etc.)
+     */
     public ChanceCondition(@Nullable Object object) {
         super(object);
     }

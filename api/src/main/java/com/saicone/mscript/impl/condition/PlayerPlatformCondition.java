@@ -11,8 +11,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * Player platform condition implementation.
+ *
+ * @author Rubenicos
+ */
 public class PlayerPlatformCondition extends SingleSection.Text implements Condition {
 
+    /**
+     * Player platform condition reader.
+     */
     public static final SectionReader<PlayerPlatformCondition> READER = reader("player-?platform", PlayerPlatformCondition::new);
 
     private final Lazy<Boolean> useFloodgate = Lazy.init(() -> {
@@ -24,6 +32,11 @@ public class PlayerPlatformCondition extends SingleSection.Text implements Condi
         }
     });
 
+    /**
+     * Constructs a new player platform condition.
+     *
+     * @param object a string representing the platform (e.g. "java", "bedrock", etc.)
+     */
     public PlayerPlatformCondition(@Nullable Object object) {
         super(object);
     }
@@ -46,6 +59,12 @@ public class PlayerPlatformCondition extends SingleSection.Text implements Condi
         };
     }
 
+    /**
+     * Tests if the given unique ID belongs to a Bedrock player.
+     *
+     * @param uniqueId the unique ID to check
+     * @return         true if the unique ID belongs to a Bedrock player, false otherwise
+     */
     public boolean isBedrockPlayer(@NotNull UUID uniqueId) {
         if (useFloodgate.get()) {
             return FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);

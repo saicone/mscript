@@ -7,7 +7,12 @@ import com.saicone.mscript.impl.condition.PermissionCondition;
 import com.saicone.mscript.impl.condition.PlayerPlatformCondition;
 import com.saicone.mscript.io.SectionReader;
 
-@SuppressWarnings("all")
+/**
+ * A collection of built-in conditions.
+ *
+ * @author Rubenicos
+ */
+@SuppressWarnings("unused")
 public final class Conditions {
 
     public static final SectionReader<? extends Condition> CHANCE = ChanceCondition.READER;

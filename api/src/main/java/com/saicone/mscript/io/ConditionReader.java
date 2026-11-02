@@ -16,6 +16,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * An abstract string reader to read conditions in a similar way to how Java evaluates expressions.
+ * It supports arithmetic, relational, logical and bitwise operators.<br>
+ * The only method that needs to be implemented is {@link #readValue(String)} which is responsible for reading a {@link Value} from a string.
+ *
+ * @author Rubenicos
+ */
 public abstract class ConditionReader extends StringReader {
 
     private static final Map<String, Operator> OPERATORS = new HashMap<>();
@@ -58,11 +65,22 @@ public abstract class ConditionReader extends StringReader {
 
     private int depth = 0;
 
+    /**
+     * Constructs a new ConditionReader with the given string.
+     *
+     * @param str the string to read conditions from
+     */
     public ConditionReader(@NotNull String str) {
         super(str);
         this.string = str;
     }
 
+    /**
+     * Reads a condition from the string.
+     *
+     * @return the condition read, or null if no condition was found
+     * @throws IOException if an I/O error occurs
+     */
     @Nullable
     public Condition readCondition() throws IOException {
         final Value<?> operation = readOperation();
@@ -89,6 +107,12 @@ public abstract class ConditionReader extends StringReader {
         };
     }
 
+    /**
+     * Reads an operation from the string.
+     *
+     * @return the operation read, or null if no operation was found
+     * @throws IOException if an I/O error occurs
+     */
     @Nullable
     public Value<?> readOperation() throws IOException {
         Value<?> current = readValue();
@@ -119,6 +143,12 @@ public abstract class ConditionReader extends StringReader {
         return current;
     }
 
+    /**
+     * Reads a value from the string.
+     *
+     * @return the value read, or null if no value was found
+     * @throws IOException if an I/O error occurs
+     */
     @Nullable
     protected Value<?> readValue() throws IOException {
         skipSpaces();
@@ -181,6 +211,13 @@ public abstract class ConditionReader extends StringReader {
         }
     }
 
+    /**
+     * Reads a value from the string until the specified end character is encountered.
+     *
+     * @param end the character that signifies the end of the block to read
+     * @return    the value read, or null if no value was found
+     * @throws IOException if an I/O error occurs
+     */
     @Nullable
     protected Value<?> readValue(char end) throws IOException {
         final StringBuilder builder = new StringBuilder();
@@ -214,9 +251,21 @@ public abstract class ConditionReader extends StringReader {
         }
     }
 
+    /**
+     * Reads a value from the string.
+     *
+     * @param str the string to read the value from
+     * @return    the value read, or null if no value was found
+     */
     @Nullable
     protected abstract Value<?> readValue(@NotNull String str);
 
+    /**
+     * Reads an operator from the string.
+     *
+     * @return the operator read, or null if no operator was found
+     * @throws IOException if an I/O error occurs
+     */
     @Nullable
     protected Operator readOperator() throws IOException {
         skipSpaces();
@@ -258,6 +307,12 @@ public abstract class ConditionReader extends StringReader {
         }
     }
 
+    /**
+     * Peeks the next character in the string without consuming it.
+     *
+     * @return the next character, or -1 if the end of the string has been reached
+     * @throws IOException if an I/O error occurs
+     */
     public int peek() throws IOException {
         mark(1);
         int c = read();
@@ -265,6 +320,13 @@ public abstract class ConditionReader extends StringReader {
         return c;
     }
 
+    /**
+     * Peeks the next characters in the string without consuming them.
+     *
+     * @param length the number of characters to peek
+     * @return       the next characters as a string, or null if the end of the string has been reached
+     * @throws IOException if an I/O error occurs
+     */
     @Nullable
     public String peek(int length) throws IOException {
         mark(length);
@@ -277,6 +339,12 @@ public abstract class ConditionReader extends StringReader {
         return null;
     }
 
+    /**
+     * Skips whitespace characters in the string.
+     *
+     * @return the number of whitespace characters skipped
+     * @throws IOException if an I/O error occurs
+     */
     public int skipSpaces() throws IOException {
         int count = 0;
         while (peek() == ' ' || peek() == '\t' || peek() == '\n' || peek() == '\r') {

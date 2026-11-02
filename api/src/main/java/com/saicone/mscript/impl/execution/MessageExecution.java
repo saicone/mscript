@@ -9,10 +9,23 @@ import com.saicone.mscript.util.Mini;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Message execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class MessageExecution extends SingleSection.TextList implements Execution {
 
+    /**
+     * Message execution reader.
+     */
     public static final SectionReader<MessageExecution> READER = reader("(mini-?)?messages?|msg|tell", MessageExecution::new);
 
+    /**
+     * Constructs a new message execution.
+     *
+     * @param object a string or list of strings representing the messages to send
+     */
     public MessageExecution(@Nullable Object object) {
         super(object);
     }

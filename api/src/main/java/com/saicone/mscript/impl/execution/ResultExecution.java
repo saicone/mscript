@@ -8,8 +8,16 @@ import com.saicone.mscript.io.SectionReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Result execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class ResultExecution implements Execution {
 
+    /**
+     * Result execution reader.
+     */
     public static final SectionReader<ResultExecution> READER = new SectionReader<>("done|true|continue|break|return|stop|false") {
         @Override
         protected ResultExecution read(@NotNull String id) {
@@ -56,6 +64,11 @@ public class ResultExecution implements Execution {
 
     private final Value<Result> value;
 
+    /**
+     * Constructs a new result execution.
+     *
+     * @param value the value representing the result to return
+     */
     public ResultExecution(@NotNull Value<Result> value) {
         this.value = value;
     }

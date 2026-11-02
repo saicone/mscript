@@ -11,6 +11,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * An execution implementation that represent a regular if-else statement, with a condition and two execution lists.
+ *
+ * @author Rubenicos
+ */
 public class ComposedExecution implements Execution {
 
     private static final Iterator<Execution> EMPTY_ITERATOR = new Iterator<>() {
@@ -29,27 +34,55 @@ public class ComposedExecution implements Execution {
     private final List<Execution> ifExecution;
     private final List<Execution> elseExecution;
 
+    /**
+     * Constructs a new composed execution with the given condition and execution lists.
+     *
+     * @param condition     the condition to evaluate, can be null (always true)
+     * @param ifExecution   the list of executions to run if the condition is true
+     * @param elseExecution the list of executions to run if the condition is false
+     */
     public ComposedExecution(@Nullable Condition condition, @NotNull List<Execution> ifExecution, @NotNull List<Execution> elseExecution) {
         this.condition = condition;
         this.ifExecution = ifExecution;
         this.elseExecution = elseExecution;
     }
 
+    /**
+     * Get the condition of this composed execution.
+     *
+     * @return the condition, or null if always true
+     */
     @Nullable
     public Condition condition() {
         return condition;
     }
 
+    /**
+     * Get the list of executions to run if the condition is true.
+     *
+     * @return the list of executions
+     */
     @NotNull
     public List<Execution> ifExecution() {
         return ifExecution;
     }
 
+    /**
+     * Get the list of executions to run if the condition is false.
+     *
+     * @return the list of executions
+     */
     @NotNull
     public List<Execution> elseExecution() {
         return elseExecution;
     }
 
+    /**
+     * Evaluates the condition and returns the list of executions to run based on the result.
+     *
+     * @param context the context to evaluate the condition
+     * @return        the list of executions to run, or null if the condition is neither true nor false
+     */
     @Nullable
     public List<Execution> execution(@NotNull Context context) {
         final Condition condition = condition();
@@ -64,6 +97,12 @@ public class ComposedExecution implements Execution {
         }
     }
 
+    /**
+     * Returns an iterator over the executions to run based on the evaluation of the condition.
+     *
+     * @param context the context to evaluate the condition
+     * @return        an iterator over the executions to run
+     */
     @NotNull
     public Iterator<Execution> iterator(@NotNull Context context) {
         final List<Execution> run = execution(context);

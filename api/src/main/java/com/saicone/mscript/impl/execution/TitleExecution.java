@@ -13,8 +13,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+/**
+ * Title execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class TitleExecution implements Execution {
 
+    /**
+     * Title execution reader.
+     */
     public static final SectionReader<TitleExecution> READER = new SectionReader<>("(show-?)?title") {
         @Override
         protected TitleExecution read(@NotNull String id, @NotNull String context) {
@@ -45,6 +53,15 @@ public class TitleExecution implements Execution {
     private final int stay;
     private final int fadeOut;
 
+    /**
+     * Constructs a new title execution.
+     *
+     * @param title    the title text to display
+     * @param subtitle the subtitle text to display
+     * @param fadeIn   the duration in ticks for the title to fade in
+     * @param stay     the duration in ticks for the title to stay on screen
+     * @param fadeOut  the duration in ticks for the title to fade out
+     */
     public TitleExecution(@Nullable String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut) {
         this.title = title;
         this.subtitle = subtitle;

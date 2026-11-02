@@ -12,8 +12,18 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A central operation object which script is executed in.<br>
+ * This object is a state holder of the script execution and can be used to get information about the current execution,
+ * change the thread of execution, delay the execution, and more depending on the implementation of the context.
+ *
+ * @author Rubenicos
+ */
 public interface Context {
 
+    /**
+     * Standardized identifier for the server context, which is used to identify the server or the console itself.
+     */
     UUID SERVER_ID = new UUID(0, 0);
 
     /**
@@ -102,16 +112,35 @@ public interface Context {
         return Optional.empty();
     }
 
+    /**
+     * Get the unique identifier of the object that the script context is currently pointing to.
+     *
+     * @return a unique identifier
+     */
     @NotNull
     default UUID getUniqueId() {
         throw new UnsupportedOperationException("Unique ID is not supported in this context");
     }
 
+    /**
+     * Parse the given string if it contains any placeholders or variables that
+     * need to be replaced with their corresponding values from the script context.
+     *
+     * @param str the string to parse
+     * @return    the parsed string
+     */
     @NotNull
     default String parse(@NotNull String str) {
         return str;
     }
 
+    /**
+     * Parse the given component if it contains any placeholders or variables that
+     * need to be replaced with their corresponding values from the script context.
+     *
+     * @param component the component to parse
+     * @return          the parsed component
+     */
     @Nullable
     @Contract("!null -> !null")
     default Component parse(@Nullable Component component) {
@@ -134,28 +163,67 @@ public interface Context {
         return component.children(component.children().stream().map(this::parse).toList());
     }
 
+    /**
+     * Move to a synchronous thread if the current execution is outside of it.
+     *
+     * @param command the command to execute
+     */
     default void sync(@NotNull Runnable command) {
         command.run();
     }
 
+    /**
+     * Move to an asynchronous thread if the current execution is on a synchronous thread.
+     *
+     * @param command the command to execute
+     */
     default void async(@NotNull Runnable command) {
         command.run();
     }
 
+    /**
+     * Delay the execution of the given command for the specified time and unit.<br>
+     * This method is only available in contexts that support delayed execution.
+     *
+     * @param time    the time to delay
+     * @param unit    the unit of time to delay
+     * @param command the command to execute after the delay
+     */
     default void delay(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
         throw new UnsupportedOperationException("Delayed execution is not supported in this context");
     }
 
+    /**
+     * Delay the execution of the given command for the specified time and unit asynchronously.<br>
+     * This method is only available in contexts that support delayed execution.
+     *
+     * @param time    the time to delay
+     * @param unit    the unit of time to delay
+     * @param command the command to execute after the delay
+     */
     default void delayAsync(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
         throw new UnsupportedOperationException("Delayed execution is not supported in this context");
     }
 
+    /**
+     * Returns the current context as the specified type, if possible.<br>
+     * If the current context is not of the specified type, a {@link ClassCastException} will be thrown.
+     *
+     * @param type the type to cast the context to
+     * @return     the current context as the specified type
+     * @param <A> the type of the context
+     */
     @NotNull
     @SuppressWarnings("unchecked")
     default <A extends Context> A as(@NotNull Class<A> type) {
         return (A) this;
     }
 
+    /**
+     * Convert the current context to a {@link ComposedContext}.
+     *
+     * @return a newly generated composed context that wraps the current context
+     */
     @NotNull
     default ComposedContext composed() {
         return new DelegateComposedContext(this);

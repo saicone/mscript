@@ -9,10 +9,23 @@ import com.saicone.mscript.util.Mini;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Action bar execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class ActionBarExecution extends SingleSection.Text implements Execution {
 
+    /**
+     * Action bar execution reader.
+     */
     public static final SectionReader<ActionBarExecution> READER = reader("action-?bar", ActionBarExecution::new);
 
+    /**
+     * Constructs a new action bar execution.
+     *
+     * @param object a string representing the message to send in the action bar
+     */
     public ActionBarExecution(@Nullable Object object) {
         super(object);
     }

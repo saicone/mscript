@@ -17,41 +17,88 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Central class to read objects into compiled scripts.<br>
+ * This class allows to set known condition and execution types to read from a given context.
+ *
+ * @author Rubenicos
+ */
 public class ScriptReader {
 
+    /**
+     * Pattern to match if section.
+     */
     public static Pattern IF_PATTERN = Pattern.compile("if|(meet-?)?conditions?", Pattern.CASE_INSENSITIVE);
+    /**
+     * Pattern to match execution section.
+     */
     public static Pattern RUN_PATTERN = Pattern.compile("run|execut(e|ions?)|actions?|then", Pattern.CASE_INSENSITIVE);
+    /**
+     * Pattern to match else section.
+     */
     public static Pattern ELSE_PATTERN = Pattern.compile("else(-?(run|execut(e|ions?)|actions?))?|deny", Pattern.CASE_INSENSITIVE);
 
     protected final SectionCompiler<Condition> conditions;
     protected final SectionCompiler<Execution> executions;
 
+    /**
+     * Constructs a new ScriptReader with default condition and execution compilers.
+     */
     public ScriptReader() {
         this(new SectionCompiler<>(), new SectionCompiler<>());
-    }
-
-    public ScriptReader(@NotNull SectionCompiler<Condition> conditions, @NotNull SectionCompiler<Execution> executions) {
-        this.conditions = conditions;
-        this.executions = executions;
 
         this.conditions.putAll(Conditions.class);
         this.executions.putAll(Executions.class);
     }
 
+    /**
+     * Constructs a new ScriptReader with the given condition and execution compilers.
+     *
+     * @param conditions the condition compiler
+     * @param executions the execution compiler
+     */
+    public ScriptReader(@NotNull SectionCompiler<Condition> conditions, @NotNull SectionCompiler<Execution> executions) {
+        this.conditions = conditions;
+        this.executions = executions;
+    }
+
+    /**
+     * Returns the condition compiler.
+     *
+     * @return the condition compiler
+     */
     @NotNull
     public SectionCompiler<Condition> conditions() {
         return conditions;
     }
 
+    /**
+     * Returns the execution compiler.
+     *
+     * @return the execution compiler
+     */
     @NotNull
     public SectionCompiler<Execution> executions() {
         return executions;
     }
 
+    /**
+     * Check if the given string is parseable into a value.
+     * By default, this method always returns true.
+     *
+     * @param str the string to check
+     * @return    true if the string is parseable, false otherwise
+     */
     protected boolean isParseable(@NotNull String str) {
         return true;
     }
 
+    /**
+     * Read a value from the given string.
+     *
+     * @param s the string to read
+     * @return  a value
+     */
     @NotNull
     public Value<?> readValue(@NotNull String s) {
         if (s.equalsIgnoreCase("true")) {
@@ -66,6 +113,13 @@ public class ScriptReader {
         return Value.literal(s);
     }
 
+    /**
+     * Read a condition from the given object.
+     *
+     * @param object the object to read
+     * @return       a condition
+     * @throws IOException if an I/O error occurs
+     */
     @UnknownNullability
     public Condition readCondition(@Nullable Object object) throws IOException {
         if (object instanceof List<?>) {
@@ -83,6 +137,14 @@ public class ScriptReader {
         return null;
     }
 
+    /**
+     * Read a condition from the given list.<br>
+     * If there are multiple conditions, they will be combined into an AND ({@code &&}) separated condition.
+     *
+     * @param list the list to read
+     * @return     a condition
+     * @throws IOException if an I/O error occurs
+     */
     @UnknownNullability
     public Condition readCondition(@NotNull List<?> list) throws IOException {
         final List<Condition> conditions = new ArrayList<>();
@@ -116,6 +178,13 @@ public class ScriptReader {
         };
     }
 
+    /**
+     * Read a condition from the given map.<br>
+     * If there are multiple conditions, they will be combined into an OR ({@code ||}) separated condition.
+     *
+     * @param map the map to read
+     * @return    a condition
+     */
     @UnknownNullability
     public Condition readCondition(@NotNull Map<?, ?> map) {
         final List<Condition> conditions = new ArrayList<>();
@@ -151,6 +220,13 @@ public class ScriptReader {
         };
     }
 
+    /**
+     * Read a condition from the given string.
+     *
+     * @param s the string to read
+     * @return  a condition
+     * @throws IOException if an I/O error occurs
+     */
     @UnknownNullability
     public Condition readCondition(@NotNull String s) throws IOException {
         // Unary condition declaration
@@ -175,6 +251,13 @@ public class ScriptReader {
         }
     }
 
+    /**
+     * Read an execution from the given object.
+     *
+     * @param object the object to read
+     * @return       an execution
+     * @throws IOException if an I/O error occurs
+     */
     @UnknownNullability
     public Execution readExecution(@Nullable Object object) throws IOException {
         if (object instanceof List<?>) {
@@ -188,6 +271,13 @@ public class ScriptReader {
         }
     }
 
+    /**
+     * Read an execution from the given list.
+     *
+     * @param list the list to read
+     * @return     an execution
+     * @throws IOException if an I/O error occurs
+     */
     @UnknownNullability
     public Execution readExecution(@NotNull List<?> list) throws IOException {
         final List<Execution> executions = readExecution0(list);
@@ -217,6 +307,13 @@ public class ScriptReader {
         return executions;
     }
 
+    /**
+     * Read an execution from the given map.
+     *
+     * @param map the map to read
+     * @return    an execution
+     * @throws IOException if an I/O error occurs
+     */
     @UnknownNullability
     public Execution readExecution(@NotNull Map<?, ?> map) throws IOException {
         Condition condition = null;
@@ -265,6 +362,12 @@ public class ScriptReader {
         return new ComposedExecution(condition, ifExecution, elseExecution);
     }
 
+    /**
+     * Read an execution from the given string.
+     *
+     * @param s the string to read
+     * @return  an execution
+     */
     @UnknownNullability
     public Execution readExecution(@NotNull String s) {
         if (s.isBlank()) {

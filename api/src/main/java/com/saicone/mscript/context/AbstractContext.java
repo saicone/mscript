@@ -4,6 +4,13 @@ import com.saicone.mscript.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A simple context implementation that stores the source and agent objects.
+ *
+ * @author Rubenicos
+ *
+ * @param <T> the type of the source and agent objects
+ */
 public abstract class AbstractContext<T> implements Context {
 
     protected final T source;

@@ -9,6 +9,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+/**
+ * A simple composed context implementation that stores the parser, literals, bindings and attributes.
+ *
+ * @author Rubenicos
+ */
 public abstract class AbstractComposedContext implements ComposedContext {
 
     private Function<String, String> parser;

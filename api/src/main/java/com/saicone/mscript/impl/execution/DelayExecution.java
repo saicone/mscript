@@ -12,10 +12,23 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Delay execution implementation.
+ *
+ * @author Rubenicos
+ */
 public class DelayExecution extends SingleSection<Long> implements Execution {
 
+    /**
+     * Delay execution reader.
+     */
     public static final SectionReader<DelayExecution> READER = reader("delay|wait", DelayExecution::new);
 
+    /**
+     * Constructs a new delay execution.
+     *
+     * @param value a number or string representing the delay duration
+     */
     public DelayExecution(@Nullable Object value) {
         super(value);
     }

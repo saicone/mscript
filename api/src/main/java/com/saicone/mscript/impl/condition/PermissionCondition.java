@@ -12,8 +12,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * Permission condition implementation.
+ *
+ * @author Rubenicos
+ */
 public class PermissionCondition extends SingleSection.Text implements Condition {
 
+    /**
+     * Permission condition reader.
+     */
     public static final SectionReader<PermissionCondition> READER = reader("(has-?)?perm(ission)?", PermissionCondition::new);
 
     private final Lazy<Boolean> useLuckPerms = Lazy.init(() -> {
@@ -25,6 +33,11 @@ public class PermissionCondition extends SingleSection.Text implements Condition
         }
     });
 
+    /**
+     * Constructs a new permission condition.
+     *
+     * @param object a string representing the permission (e.g. "myplugin.mypermission")
+     */
     public PermissionCondition(@Nullable Object object) {
         super(object);
     }
@@ -42,6 +55,13 @@ public class PermissionCondition extends SingleSection.Text implements Condition
         }
     }
 
+    /**
+     * Tests if the given context has the specified permission using LuckPerms.
+     *
+     * @param context    the context to check the permission for
+     * @param permission the permission to check
+     * @return           true if the context has the permission, false if not, or null if undefined
+     */
     @Nullable
     public final Boolean test(@NotNull Context context, @NotNull String permission) {
         final UUID uniqueId = context.getUniqueId();
@@ -59,6 +79,13 @@ public class PermissionCondition extends SingleSection.Text implements Condition
         return tristate == Tristate.UNDEFINED ? null : tristate.asBoolean();
     }
 
+    /**
+     * Tests if the given context has the specified permission using platform-specific methods.
+     *
+     * @param context    the context to check the permission for
+     * @param permission the permission to check
+     * @return           true if the context has the permission, false if not, or null if undefined
+     */
     @Nullable
     public Boolean testPlatform(@NotNull Context context, @NotNull String permission) {
         throw new UnsupportedOperationException("Platform-specific permission condition is not implemented. Implement PermissionCondition or use LuckPerms");

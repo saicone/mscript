@@ -8,6 +8,12 @@ import com.saicone.mscript.impl.execution.ResultExecution;
 import com.saicone.mscript.impl.execution.TitleExecution;
 import com.saicone.mscript.io.SectionReader;
 
+/**
+ * A collection of built-in executions.
+ *
+ * @author Rubenicos
+ */
+@SuppressWarnings("unused")
 public final class Executions {
 
     public static final SectionReader<? extends Execution> ACTIONBAR = ActionBarExecution.READER;
