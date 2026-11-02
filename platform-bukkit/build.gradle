@@ -7,7 +7,7 @@ repositories {
 
 dependencies {
     api project(':api')
-    compileOnly 'io.papermc.paper:paper-api:26.2.build.92-stable'
+    compileOnly 'io.papermc.paper:paper-api:26.3.build.237-stable'
     compileOnly 'net.kyori:adventure-platform-bukkit:4.4.1'
     compileOnly 'me.clip:placeholderapi:2.12.3'
     compileOnly('com.github.MilkBowl:VaultAPI:1.7.1') { transitive = false }
@@ -15,6 +15,6 @@ dependencies {
 
 javadoc {
     options {
-        links 'https://jd.papermc.io/paper/26.2/'
+        links 'https://jd.papermc.io/paper/26.3/'
     }
 }
