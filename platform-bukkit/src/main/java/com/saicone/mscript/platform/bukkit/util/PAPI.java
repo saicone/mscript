@@ -19,7 +19,7 @@ public final class PAPI {
         return INSTANCE;
     }
 
-    private final Lazy<Boolean> present = Lazy.of(() -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"));
+    private final Lazy<Boolean> present = Lazy.init(() -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"));
 
     public boolean isPresent() {
         return present.get();

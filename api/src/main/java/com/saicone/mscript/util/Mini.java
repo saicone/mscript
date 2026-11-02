@@ -35,7 +35,7 @@ public class Mini implements TypeParser<Component> {
     private final MiniMessage miniMessage;
     private final ListParser<Component> listParser;
 
-    private final Lazy<Boolean> useMiniPlaceholders = Lazy.of(() -> {
+    private final Lazy<Boolean> useMiniPlaceholders = Lazy.init(() -> {
         try {
             Class.forName("io.github.miniplaceholders.api.MiniPlaceholders");
             return true;

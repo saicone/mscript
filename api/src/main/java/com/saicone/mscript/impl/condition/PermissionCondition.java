@@ -16,7 +16,7 @@ public class PermissionCondition extends SingleSection.Text implements Condition
 
     public static final SectionReader<PermissionCondition> READER = reader("(has-?)?perm(ission)?", PermissionCondition::new);
 
-    private final Lazy<Boolean> useLuckPerms = Lazy.of(() -> {
+    private final Lazy<Boolean> useLuckPerms = Lazy.init(() -> {
         try {
             Class.forName("net.luckperms.api.LuckPermsProvider");
             return true;

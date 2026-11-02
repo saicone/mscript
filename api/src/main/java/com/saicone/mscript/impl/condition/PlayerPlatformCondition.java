@@ -15,7 +15,7 @@ public class PlayerPlatformCondition extends SingleSection.Text implements Condi
 
     public static final SectionReader<PlayerPlatformCondition> READER = reader("player-?platform", PlayerPlatformCondition::new);
 
-    private final Lazy<Boolean> useFloodgate = Lazy.of(() -> {
+    private final Lazy<Boolean> useFloodgate = Lazy.init(() -> {
         try {
             Class.forName("org.geysermc.floodgate.api.FloodgateApi");
             return true;

@@ -25,7 +25,7 @@ import java.util.function.UnaryOperator;
 
 public class BukkitContext extends AbstractComposedContext implements Context {
 
-    private static final Lazy<Boolean> MULTITHREADING = Lazy.of(() -> {
+    private static final Lazy<Boolean> MULTITHREADING = Lazy.init(() -> {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             return true;

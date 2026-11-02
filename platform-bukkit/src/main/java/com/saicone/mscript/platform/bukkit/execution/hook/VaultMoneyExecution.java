@@ -17,7 +17,7 @@ import org.jspecify.annotations.NonNull;
 
 public class VaultMoneyExecution extends SingleSection<Double> implements Execution {
 
-    private static final Lazy<Object> ECONOMY = Lazy.of(() -> {
+    private static final Lazy<Object> ECONOMY = Lazy.init(() -> {
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             final RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
             if (rsp != null) {
