@@ -6,15 +6,11 @@ repositories {
 
 dependencies {
     api project(':api')
-    compileOnly 'com.velocitypowered:velocity-api:4.1.0-SNAPSHOT'
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+    compileOnly 'com.velocitypowered:velocity-api:4.3.2-SNAPSHOT'
 }
 
 javadoc {
     options {
-        links 'https://jd.papermc.io/velocity/4.1.0/'
+        links 'https://jd.papermc.io/velocity/4.3.2/'
     }
 }
