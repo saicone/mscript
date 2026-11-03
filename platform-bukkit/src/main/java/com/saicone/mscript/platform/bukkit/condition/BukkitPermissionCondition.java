@@ -3,6 +3,7 @@ package com.saicone.mscript.platform.bukkit.condition;
 import com.saicone.mscript.Context;
 import com.saicone.mscript.impl.condition.PermissionCondition;
 import com.saicone.mscript.io.SectionReader;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,10 @@ public class BukkitPermissionCondition extends PermissionCondition {
     @Override
     public @Nullable Boolean testPlatform(@NotNull Context context, @NotNull String permission) {
         final CommandSender sender = context.get();
-        return sender.hasPermission(permission);
+        try {
+            return sender.permissionValue(permission).toBoolean();
+        } catch (Throwable t) {
+            return sender.hasPermission(permission);
+        }
     }
 }

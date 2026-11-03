@@ -169,7 +169,7 @@ public interface Context {
      * @param command the command to execute
      */
     default void sync(@NotNull Runnable command) {
-        command.run();
+        async(command);
     }
 
     /**
@@ -190,7 +190,7 @@ public interface Context {
      * @param command the command to execute after the delay
      */
     default void delay(long time, @NotNull TimeUnit unit, @NotNull Runnable command) {
-        throw new UnsupportedOperationException("Delayed execution is not supported in this context");
+        delayAsync(time, unit, command);
     }
 
     /**

@@ -1,0 +1,41 @@
+package com.saicone.mscript.platform.bungeecord.execution;
+
+import com.saicone.mscript.Context;
+import com.saicone.mscript.Execution;
+import com.saicone.mscript.Result;
+import com.saicone.mscript.impl.SingleSection;
+import com.saicone.mscript.io.SectionReader;
+import net.md_5.bungee.api.ProxyServer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Console command execution implementation.
+ *
+ * @author Rubenicos
+ */
+public class ConsoleCommandExecution extends SingleSection.Text implements Execution {
+
+    /**
+     * Console command execution reader.
+     */
+    public static final SectionReader<ConsoleCommandExecution> READER = reader("console(-?command)?", ConsoleCommandExecution::new);
+
+    /**
+     * Constructs a new console command execution.
+     *
+     * @param object a string representing the command to execute
+     */
+    public ConsoleCommandExecution(@Nullable Object object) {
+        super(object);
+    }
+
+    @Override
+    public @NotNull Result run(@NotNull Context context) {
+        final String command = getValue(context);
+
+        ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), command);
+
+        return Result.DONE;
+    }
+}

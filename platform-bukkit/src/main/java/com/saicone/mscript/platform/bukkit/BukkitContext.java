@@ -91,6 +91,11 @@ public class BukkitContext extends AbstractComposedContext implements Context {
         function("minimessage", object -> Mini.get().parse(pointer(), object));
     }
 
+    /**
+     * Get the plugin associated with this context.
+     *
+     * @return a plugin instance
+     */
     @NotNull
     public Plugin plugin() {
         return plugin;

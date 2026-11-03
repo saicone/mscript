@@ -3,6 +3,7 @@ description = 'MScript Platform Bungeecord'
 dependencies {
     api project(':api')
     compileOnly 'net.md-5:bungeecord-api:26.1-R0.1-SNAPSHOT'
+    compileOnly 'net.kyori:adventure-platform-bungeecord:4.4.1'
 }
 
 javadoc {
