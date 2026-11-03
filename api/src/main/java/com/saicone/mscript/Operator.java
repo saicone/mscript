@@ -273,7 +273,7 @@ public interface Operator {
             }
         },
         /**
-         * Represents the less than operator (<).<br>
+         * Represents the less than operator (&lt;).<br>
          * It can be used to compare two values for less than.
          */
         LESS_THAN("<") {
@@ -283,7 +283,7 @@ public interface Operator {
             }
         },
         /**
-         * Represents the less than or equals operator (<=).<br>
+         * Represents the less than or equals operator (&lt;=).<br>
          * It can be used to compare two values for less than or equals.
          */
         LESS_OR_EQUALS("<=") {
@@ -339,7 +339,7 @@ public interface Operator {
      */
     enum Logical implements Operator {
         /**
-         * Represents the logical AND operator (&&).<br>
+         * Represents the logical AND operator (&amp;&amp;).<br>
          * It can be used to combine two boolean values.
          */
         AND("&&") {
@@ -397,7 +397,7 @@ public interface Operator {
      */
     enum Bitwise implements Operator {
         /**
-         * Represents the bitwise AND operator (&).<br>
+         * Represents the bitwise AND operator (&amp;).<br>
          * It can be used to perform a bitwise AND operation on two integer or boolean values.
          */
         AND("&") {

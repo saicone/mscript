@@ -4,10 +4,12 @@ import com.saicone.mscript.Context;
 import com.saicone.mscript.Execution;
 import com.saicone.mscript.Result;
 import com.saicone.mscript.platform.velocity.VelocityContext;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
+@ApiStatus.Internal
 public interface VelocityExecution extends Execution {
 
     @Override

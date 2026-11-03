@@ -11,6 +11,6 @@ dependencies {
 
 javadoc {
     options {
-        links 'https://jd.papermc.io/velocity/4.3.2/'
+        links 'https://jd.papermc.io/velocity/4.2.1/'
     }
 }

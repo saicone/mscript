@@ -11,16 +11,16 @@ import java.util.function.Function;
  * In terms of programming, a value is a piece of data that can be used in expressions, conditions, and executions.<br>
  * A value implementation can be a literal value, a parseable, a chained parseable, or even a complex expression:<br>
  * <ul>
- * <li><a id="default"><b>Literal</b></a>
+ * <li><a id="literal"><b>Literal</b></a>
  * <p> Is the value itself, without any modification or parsing.</p>
  * </li>
- * <li><a id="strict"><b>Parseable</b></a>
+ * <li><a id="parseable"><b>Parseable</b></a>
  * <p> Is a text value that can be parsed from script context.</p>
  * </li>
- * <li><a id="padded"><b>Chained Parseable</b></a>
+ * <li><a id="chained-parseable"><b>Chained Parseable</b></a>
  * <p> Is a parseable value converted into a different type of data.</p>
  * </li>
- * <li><a id="padded"><b>Complex Expression</b></a>
+ * <li><a id="complex-expression"><b>Complex Expression</b></a>
  * <p> Is the implementation itself of the value interface, which a script context
  *     is provided to obtain the value that is required.</p>
  * </li>
