@@ -14,13 +14,18 @@ import java.util.concurrent.CompletableFuture;
 public interface Execution extends Section {
 
     /**
-     * Creates an empty execution that does nothing and returns {@link Result#CONTINUE}.
+     * An empty execution that does nothing.
+     */
+    Execution EMPTY = context -> Result.UNKNOWN;
+
+    /**
+     * Get an empty execution that does nothing and returns {@link Result#UNKNOWN}.
      *
      * @return a newly created empty execution
      */
     @NotNull
     static Execution empty() {
-        return context -> Result.CONTINUE;
+        return EMPTY;
     }
 
     /**

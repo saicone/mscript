@@ -1,18 +1,18 @@
 package com.saicone.mscript.impl;
 
-import com.saicone.mscript.Condition;
 import com.saicone.mscript.Context;
 import com.saicone.mscript.Execution;
 import com.saicone.mscript.Result;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * An execution implementation that represent a regular if-else statement, with a condition and two execution lists.
+ * A composed execution that runs a list of executions sequentially, handling
+ * nested composed executions and condition evaluations through its iterator.
+ * Delayed results are resumed asynchronously outside the current scope.
  *
  * @author Rubenicos
  */
@@ -30,117 +30,41 @@ public class ComposedExecution implements Execution {
         }
     };
 
-    private final Condition condition;
-    private final List<Execution> ifExecution;
-    private final List<Execution> elseExecution;
+    private final List<Execution> executions;
 
     /**
-     * Constructs a new composed execution with the given condition and execution lists.
+     * Constructs a composed execution.
      *
-     * @param condition     the condition to evaluate, can be null (always true)
-     * @param ifExecution   the list of executions to run if the condition is true
-     * @param elseExecution the list of executions to run if the condition is false
+     * @param executions the executions to run
      */
-    public ComposedExecution(@Nullable Condition condition, @NotNull List<Execution> ifExecution, @NotNull List<Execution> elseExecution) {
-        this.condition = condition;
-        this.ifExecution = ifExecution;
-        this.elseExecution = elseExecution;
+    public ComposedExecution(@NotNull List<Execution> executions) {
+        this.executions = executions;
     }
 
     /**
-     * Get the condition of this composed execution.
+     * Get the executions of this composed execution.
      *
-     * @return the condition, or null if always true
-     */
-    @Nullable
-    public Condition condition() {
-        return condition;
-    }
-
-    /**
-     * Get the list of executions to run if the condition is true.
-     *
-     * @return the list of executions
+     * @return the executions
      */
     @NotNull
-    public List<Execution> ifExecution() {
-        return ifExecution;
+    public List<Execution> getExecutions() {
+        return executions;
     }
 
     /**
-     * Get the list of executions to run if the condition is false.
+     * Get an iterator of executions to run.
      *
-     * @return the list of executions
-     */
-    @NotNull
-    public List<Execution> elseExecution() {
-        return elseExecution;
-    }
-
-    /**
-     * Evaluates the condition and returns the list of executions to run based on the result.
-     *
-     * @param context the context to evaluate the condition
-     * @return        the list of executions to run, or null if the condition is neither true nor false
-     */
-    @Nullable
-    public List<Execution> execution(@NotNull Context context) {
-        final Condition condition = condition();
-        final Boolean result = condition != null ? condition.test(context) : Boolean.TRUE;
-
-        if (Boolean.TRUE.equals(result)) {
-            return ifExecution();
-        } else if (Boolean.FALSE.equals(result)) {
-            return elseExecution();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns an iterator over the executions to run based on the evaluation of the condition.
-     *
-     * @param context the context to evaluate the condition
-     * @return        an iterator over the executions to run
+     * @param context the context to run the executions
+     * @return        an iterator of executions
      */
     @NotNull
     public Iterator<Execution> iterator(@NotNull Context context) {
-        final List<Execution> run = execution(context);
-        if (run == null || run.isEmpty()) {
+        final List<Execution> executions = getExecutions();
+        if (executions.isEmpty()) {
             return EMPTY_ITERATOR;
         }
 
-        return new Iterator<>() {
-            final Iterator<Execution> main = run.iterator();
-            Iterator<Execution> sub;
-
-            @Override
-            public boolean hasNext() {
-                if (sub != null) {
-                    if (sub.hasNext()) {
-                        return true;
-                    } else {
-                        sub = null;
-                    }
-                }
-                return main.hasNext();
-            }
-
-            @Override
-            public Execution next() {
-                if (sub != null) {
-                    return sub.next();
-                } else {
-                    final Execution execution = main.next();
-                    if (execution instanceof ComposedExecution composed) {
-                        sub = composed.iterator(context);
-                        return next();
-                    } else {
-                        return execution;
-                    }
-                }
-            }
-        };
+        return new ComposedIterator(context, executions.iterator());
     }
 
     @Override
@@ -220,5 +144,71 @@ public class ComposedExecution implements Execution {
         }
 
         future.complete(result);
+    }
+
+    /**
+     * An iterator that flattens nested composed executions and evaluates
+     * condition executions lazily as they are encountered.
+     */
+    public static class ComposedIterator implements Iterator<Execution> {
+
+        private final Context context;
+        private final Iterator<Execution> main;
+
+        private Iterator<Execution> sub;
+
+        /**
+         * Constructs a composed iterator.
+         *
+         * @param context the context to run the executions
+         * @param main    the main iterator
+         */
+        public ComposedIterator(@NotNull Context context, @NotNull Iterator<Execution> main) {
+            this.context = context;
+            this.main = main;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (sub != null) {
+                if (sub.hasNext()) {
+                    return true;
+                } else {
+                    sub = null;
+                }
+            }
+            return main.hasNext();
+        }
+
+        @Override
+        public Execution next() {
+            if (sub != null) {
+                return sub.next();
+            } else {
+                Execution execution = main.next();
+                if (execution instanceof ConditionExecution condition) {
+                    execution = eval(condition);
+                }
+
+                if (execution instanceof ComposedExecution composed) {
+                    sub = composed.iterator(context);
+                    return next();
+                } else {
+                    return execution;
+                }
+            }
+        }
+
+        @NotNull
+        private Execution eval(@NotNull ConditionExecution execution) {
+            final Execution result = execution.execution(context);
+            if (result == null) {
+                return Execution.empty();
+            } else if (result instanceof ConditionExecution condition) {
+                return eval(condition);
+            } else {
+                return execution;
+            }
+        }
     }
 }

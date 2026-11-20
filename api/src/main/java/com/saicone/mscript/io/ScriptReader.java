@@ -4,6 +4,7 @@ import com.saicone.mscript.Condition;
 import com.saicone.mscript.Execution;
 import com.saicone.mscript.Value;
 import com.saicone.mscript.impl.ComposedExecution;
+import com.saicone.mscript.impl.ConditionExecution;
 import com.saicone.mscript.impl.Conditions;
 import com.saicone.mscript.impl.Executions;
 import com.saicone.types.Types;
@@ -286,11 +287,7 @@ public class ScriptReader {
             return null;
         }
 
-        if (executions.size() == 1) {
-            return executions.get(0);
-        }
-
-        return new ComposedExecution(null, executions, List.of());
+        return readExecution1(executions);
     }
 
     @NotNull
@@ -305,6 +302,19 @@ public class ScriptReader {
         }
 
         return executions;
+    }
+
+    @NotNull
+    private Execution readExecution1(@NotNull List<Execution> executions) {
+        if (executions.isEmpty()) {
+            return Execution.empty();
+        }
+
+        if (executions.size() == 1) {
+            return executions.get(0);
+        }
+
+        return new ComposedExecution(executions);
     }
 
     /**
@@ -359,7 +369,7 @@ public class ScriptReader {
             return null;
         }
 
-        return new ComposedExecution(condition, ifExecution, elseExecution);
+        return new ConditionExecution(condition, readExecution1(ifExecution), readExecution1(elseExecution));
     }
 
     /**

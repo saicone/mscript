@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class Result {
 
     /**
-     * Represents an unknown result, which means that the result is not yet known or determined.
+     * Represents an unknown result, which means that the result is not yet known or determined.<br>
+     * This result is intended to be ignored on every possible case because doesn't represent anything.
      */
     public static final Result UNKNOWN = new Result() {
         @Override
