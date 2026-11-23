@@ -9,6 +9,9 @@ dependencies {
     compileOnly 'org.geysermc.floodgate:api:2.2.5-SNAPSHOT'
     compileOnly 'io.github.miniplaceholders:miniplaceholders-api:3.2.0'
 
+    compileOnly 'com.github.ben-manes.caffeine:caffeine:3.3.1'
+    compileOnly 'com.google.guava:guava:33.8.0-jre'
+
     testImplementation(platform('org.junit:junit-bom:5.14.3'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testRuntimeOnly('org.junit.platform:junit-platform-launcher')

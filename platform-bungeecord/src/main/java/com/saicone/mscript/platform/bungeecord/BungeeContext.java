@@ -66,12 +66,12 @@ public class BungeeContext extends AbstractComposedContext implements Context {
         this.source = source;
         this.agent = agent;
 
-        attribute("context", this);
-        attribute("plugin", plugin);
+        binding("context", this);
+        binding("plugin", plugin);
         if (source instanceof ProxiedPlayer player) {
-            attribute("player", player);
+            binding("player", player);
         }
-        attribute("server", ProxyServer.getInstance());
+        binding("server", ProxyServer.getInstance());
 
         function("minimessage", object -> Mini.get().parse(pointer(), object));
     }

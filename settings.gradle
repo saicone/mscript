@@ -2,6 +2,8 @@ rootProject.name = 'mscript'
 
 include 'api'
 
+include 'engine-graal-js'
+
 include 'platform-bukkit'
 include 'platform-bungeecord'
 include 'platform-velocity'

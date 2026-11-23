@@ -23,16 +23,16 @@ public class DelegateComposedContext extends AbstractComposedContext implements 
 
     @Override
     public void forEachBinding(@NotNull BiConsumer<String, Object> consumer) {
-        if (delegate instanceof ComposedContext composed) {
-            composed.forEachBinding(consumer);
+        if (delegate instanceof EngineContext context) {
+            context.forEachBinding(consumer);
         }
         super.forEachBinding(consumer);
     }
 
     @Override
     public void forEachAttribute(@NotNull BiConsumer<String, Object> consumer) {
-        if (delegate instanceof ComposedContext composed) {
-            composed.forEachAttribute(consumer);
+        if (delegate instanceof EngineContext context) {
+            context.forEachAttribute(consumer);
         }
         super.forEachAttribute(consumer);
     }

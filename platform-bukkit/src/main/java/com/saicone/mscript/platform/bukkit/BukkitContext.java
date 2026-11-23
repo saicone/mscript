@@ -81,12 +81,12 @@ public class BukkitContext extends AbstractComposedContext implements Context {
         this.source = source;
         this.agent = agent;
 
-        attribute("context", this);
-        attribute("plugin", plugin);
+        binding("context", this);
+        binding("plugin", plugin);
         if (source instanceof Player player) {
-            attribute("player", player);
+            binding("player", player);
         }
-        attribute("server", Bukkit.getServer());
+        binding("server", Bukkit.getServer());
 
         function("minimessage", object -> Mini.get().parse(pointer(), object));
     }

@@ -3,6 +3,9 @@ package com.saicone.mscript.context;
 import com.saicone.mscript.ComposedContext;
 import org.jetbrains.annotations.NotNull;
 
+import javax.script.ScriptContext;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -18,21 +21,13 @@ public abstract class AbstractComposedContext implements ComposedContext {
 
     private Function<String, String> parser;
     private Map<String, Object> literals;
-    private Map<String, Object> bindings;
+
+    private final ScriptContext scriptContext;
+    private SimpleBindings bindings;
     private Map<String, Object> attributes;
 
-    @Override
-    public void forEachBinding(@NotNull BiConsumer<String, Object> consumer) {
-        if (this.bindings != null) {
-            this.bindings.forEach(consumer);
-        }
-    }
-
-    @Override
-    public void forEachAttribute(@NotNull BiConsumer<String, Object> consumer) {
-        if (this.attributes != null) {
-            this.attributes.forEach(consumer);
-        }
+    public AbstractComposedContext() {
+        this.scriptContext = new SimpleScriptContext();
     }
 
     @Override
@@ -69,9 +64,29 @@ public abstract class AbstractComposedContext implements ComposedContext {
     }
 
     @Override
+    public @NotNull ScriptContext scriptContext() {
+        return scriptContext;
+    }
+
+    @Override
+    public void forEachBinding(@NotNull BiConsumer<String, Object> consumer) {
+        if (this.bindings != null) {
+            this.bindings.forEach(consumer);
+        }
+    }
+
+    @Override
+    public void forEachAttribute(@NotNull BiConsumer<String, Object> consumer) {
+        if (this.attributes != null) {
+            this.attributes.forEach(consumer);
+        }
+    }
+
+    @Override
     public @NotNull ComposedContext binding(@NotNull String key, @NotNull Object value) {
         if (this.bindings == null) {
-            this.bindings = new HashMap<>();
+            this.bindings = new SimpleBindings();
+            this.scriptContext.setBindings(this.bindings, ScriptContext.ENGINE_SCOPE);
         }
         this.bindings.put(key, value);
         return this;
@@ -83,6 +98,7 @@ public abstract class AbstractComposedContext implements ComposedContext {
             this.attributes = new HashMap<>();
         }
         this.attributes.put(key, value);
+        this.scriptContext.setAttribute(key, value, ScriptContext.ENGINE_SCOPE);
         return this;
     }
 }

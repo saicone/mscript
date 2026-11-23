@@ -55,12 +55,13 @@ public class VelocityContext extends AbstractComposedContext implements Context 
         this.source = source;
         this.agent = agent;
 
-        attribute("context", this);
-        attribute("plugin", plugin);
+        binding("context", this);
+        binding("proxy", proxy);
+        binding("plugin", plugin);
         if (source instanceof Player player) {
-            attribute("player", player);
+            binding("player", player);
         }
-        attribute("server", proxy);
+        binding("server", proxy);
 
         function("minimessage", object -> Mini.get().parse(pointer(), object));
     }

@@ -1,0 +1,9 @@
+description = 'MScript Engine GraalJS'
+
+dependencies {
+    api project(':api')
+
+    compileOnly 'org.graalvm.polyglot:polyglot:25.5.5.0.3'
+    compileOnly 'org.graalvm.polyglot:js:25.5.5.0.3'
+    compileOnly 'org.graalvm.js:js-scriptengine:25.5.5.0.3'
+}
