@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 /**
  * Vault money execution implementation.
@@ -69,8 +68,8 @@ public class VaultMoneyExecution extends SingleSection<Double> implements Execut
     }
 
     @Override
-    protected @NonNull Double parse(@NotNull Object object) {
-        return Types.DOUBLE.parse(object);
+    protected @NotNull Double parse(@NotNull Object object) {
+        return Types.DOUBLE.parseOrThrow(object);
     }
 
     @Override

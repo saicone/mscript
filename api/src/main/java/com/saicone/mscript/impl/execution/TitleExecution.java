@@ -30,19 +30,19 @@ public class TitleExecution implements Execution {
 
             final String title = parts.length > 0 ? parts[0] : null;
             final String subtitle = parts.length > 1 ? parts[1] : null;
-            final int fadeIn = parts.length > 2 ? Types.INTEGER.parse(parts[2], 10) : 10;
-            final int stay = parts.length > 3 ? Types.INTEGER.parse(parts[3], 70) : 70;
-            final int fadeOut = parts.length > 4 ? Types.INTEGER.parse(parts[4], 20) : 20;
+            final int fadeIn = parts.length > 2 ? Types.INTEGER.parseOrElse(parts[2], 10) : 10;
+            final int stay = parts.length > 3 ? Types.INTEGER.parseOrElse(parts[3], 70) : 70;
+            final int fadeOut = parts.length > 4 ? Types.INTEGER.parseOrElse(parts[4], 20) : 20;
             return new TitleExecution(title, subtitle, fadeIn, stay, fadeOut);
         }
 
         @Override
         protected TitleExecution read(@NotNull String id, @NotNull Map<?, ?> context) {
-            final String title = Types.STRING.parse(context.get("title"), null);
-            final String subtitle = Types.STRING.parse(context.get("subtitle"), null);
-            final int fadeIn = Types.INTEGER.parse(context.get("fade-in"), 10);
-            final int stay = Types.INTEGER.parse(context.get("stay"), 70);
-            final int fadeOut = Types.INTEGER.parse(context.get("fade-out"), 20);
+            final String title = Types.STRING.parseOrNull(context.get("title"));
+            final String subtitle = Types.STRING.parseOrNull(context.get("subtitle"));
+            final int fadeIn = Types.INTEGER.parseOrElse(context.get("fade-in"), 10);
+            final int stay = Types.INTEGER.parseOrElse(context.get("stay"), 70);
+            final int fadeOut = Types.INTEGER.parseOrElse(context.get("fade-out"), 20);
             return new TitleExecution(title, subtitle, fadeIn, stay, fadeOut);
         }
     };

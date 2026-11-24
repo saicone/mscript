@@ -98,7 +98,7 @@ public abstract class SingleSection<T> implements Section {
 
         @Override
         protected @NotNull List<String> parse(@NotNull Object object) {
-            return PARSER.parse(object);
+            return PARSER.parseOrThrow(object);
         }
     }
 }

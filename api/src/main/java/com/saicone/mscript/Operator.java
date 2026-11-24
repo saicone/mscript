@@ -115,8 +115,8 @@ public interface Operator {
 
         @NotNull
         protected Object eval0(@NotNull Object aObject, @NotNull Object bObject) {
-            final BigDecimal aNumber = Types.BIG_DECIMAL.parseOrDefault(aObject, null);
-            final BigDecimal bNumber = Types.BIG_DECIMAL.parseOrDefault(bObject, null);
+            final BigDecimal aNumber = Types.BIG_DECIMAL.parseOrNull(aObject);
+            final BigDecimal bNumber = Types.BIG_DECIMAL.parseOrNull(bObject);
             if (aNumber == null || bNumber == null) {
                 return eval1(aObject, bObject);
             }
@@ -312,8 +312,8 @@ public interface Operator {
                 return null;
             }
 
-            final BigDecimal aNumber = Types.BIG_DECIMAL.parseOrDefault(aObject, null);
-            final BigDecimal bNumber = Types.BIG_DECIMAL.parseOrDefault(bObject, null);
+            final BigDecimal aNumber = Types.BIG_DECIMAL.parseOrNull(aObject);
+            final BigDecimal bNumber = Types.BIG_DECIMAL.parseOrNull(bObject);
             if (aNumber != null && bNumber != null) {
                 return eval(aNumber, bNumber);
             }
@@ -450,8 +450,8 @@ public interface Operator {
             aObject = booleanOrObject(aObject);
             bObject = booleanOrObject(bObject);
 
-            final Long aLong = Types.LONG.parseOrDefault(aObject, null);
-            final Long bLong = Types.LONG.parseOrDefault(bObject, null);
+            final Long aLong = Types.LONG.parseOrNull(aObject);
+            final Long bLong = Types.LONG.parseOrNull(bObject);
             if (aLong != null && bLong != null) {
                 final long result = eval(aLong, bLong);
                 // Try to convert the result back to original type if applicable
@@ -478,7 +478,7 @@ public interface Operator {
         @NotNull
         private Object booleanOrObject(@NotNull Object object) {
             if (object instanceof String) {
-                final Boolean bool = Types.BOOLEAN.parseOrDefault(object, null);
+                final Boolean bool = Types.BOOLEAN.parseOrNull(object);
                 if (bool != null) {
                     return bool;
                 }

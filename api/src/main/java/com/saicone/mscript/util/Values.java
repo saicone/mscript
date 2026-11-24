@@ -16,12 +16,12 @@ public final class Values {
         // For example, a Boolean with a "true" String, or a Number with a "1" String
         if (a instanceof Boolean || b instanceof Boolean) {
             // A null object is considered false when compared to a Boolean, so we can safely default to false
-            final Boolean aBool = Types.BOOLEAN.parseOrDefault(a, false);
-            final Boolean bBool = Types.BOOLEAN.parseOrDefault(b, false);
+            final Boolean aBool = Types.BOOLEAN.parseOrElse(a, false);
+            final Boolean bBool = Types.BOOLEAN.parseOrElse(b, false);
             return aBool == bBool;
         } else if (a instanceof Number || b instanceof Number) {
-            final BigDecimal aNum = Types.BIG_DECIMAL.parseOrDefault(a, null);
-            final BigDecimal bNum = Types.BIG_DECIMAL.parseOrDefault(b, null);
+            final BigDecimal aNum = Types.BIG_DECIMAL.parseOrNull(a);
+            final BigDecimal bNum = Types.BIG_DECIMAL.parseOrNull(b);
             return aNum != null && bNum != null && aNum.compareTo(bNum) == 0;
         } else {
             return Objects.equals(a, b);
@@ -54,12 +54,12 @@ public final class Values {
 
     @ApiStatus.Internal
     public static boolean isTrue(@NotNull Object object) {
-        return Boolean.TRUE.equals(Types.BOOLEAN.parseOrDefault(object, null));
+        return Boolean.TRUE.equals(Types.BOOLEAN.parseOrNull(object));
     }
 
     @ApiStatus.Internal
     public static boolean isFalse(@NotNull Object object) {
-        return Boolean.FALSE.equals(Types.BOOLEAN.parseOrDefault(object, null));
+        return Boolean.FALSE.equals(Types.BOOLEAN.parseOrNull(object));
     }
 
     Values() {

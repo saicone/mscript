@@ -200,7 +200,7 @@ public abstract class ConditionReader extends StringReader {
                     return null;
                 }
                 // With '!' operator, the result is considered a boolean
-                final Boolean bool = Types.BOOLEAN.parseOrDefault(value, null);
+                final Boolean bool = Types.BOOLEAN.parseOrNull(value);
                 if (bool == null) {
                     return null;
                 }

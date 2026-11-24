@@ -130,7 +130,7 @@ public class ScriptReader {
         } else if (object instanceof String) {
             return readCondition((String) object);
         } else if (object != null) {
-            final Boolean bool = Types.BOOLEAN.parseOrDefault(object, null);
+            final Boolean bool = Types.BOOLEAN.parseOrNull(object);
             if (bool != null) {
                 return context -> bool;
             }

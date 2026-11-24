@@ -12,7 +12,6 @@ import com.saicone.mscript.util.cache.Cache;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.time.Duration;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class GuavaCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public V get(@NonNull K key, @NotNull Function<? super K, ? extends V> mappingFunction) throws ComputeFailure {
+    public V get(@NotNull K key, @NotNull Function<? super K, ? extends V> mappingFunction) throws ComputeFailure {
         try {
             return cache.get(key, () -> mappingFunction.apply(key));
         } catch (ExecutionException | ExecutionError e) {
