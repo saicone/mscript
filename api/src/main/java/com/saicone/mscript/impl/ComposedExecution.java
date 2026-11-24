@@ -207,7 +207,7 @@ public class ComposedExecution implements Execution {
             } else if (result instanceof ConditionExecution condition) {
                 return eval(condition);
             } else {
-                return execution;
+                return result;
             }
         }
     }
